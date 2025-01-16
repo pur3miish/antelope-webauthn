@@ -1,4 +1,4 @@
-# antelope-webauthn
+# Antelope-webauthn
 
 This project demonstrates how WebAuthn (Web Authentication) can be used to generate public keys and signatures for Antelope-based blockchains. WebAuthn is a web standard that provides a strong authentication mechanism using hardware-backed credentials like biometrics, security keys, or built-in device authenticators.
 
