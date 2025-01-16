@@ -1,0 +1,66 @@
+{
+  "name": "antelope-webauthn",
+  "version": "1.0.0-rc.0",
+  "description": "A WebAuthn.io crypto utility for generating signatures, creating public keys, and verifying them, designed for Antelope-based blockchains such as EOSIO, WAX, and other related platforms. This package provides convenient tools to handle key pair generation, signing operations, and signature verification, supporting the WebAuthn standard for secure, decentralized authentication.",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=7.0.0"
+  },
+  "keywords": [
+    "webauthn",
+    "EOS",
+    "TELOS",
+    "WAX",
+    "XRP",
+    "JUNGLE",
+    "XRP",
+    "signature",
+    "public",
+    "key",
+    "PUB_WA",
+    "SIG_WA"
+  ],
+  "files": [
+    "_utils/",
+    "create_wa_public_key.js",
+    "create_wa_public_key.d.ts",
+    "create_wa_signature.js",
+    "create_wa_signature.d.ts"
+  ],
+  "exports": {
+    "./create_wa_public_key.js": "./create_wa_public_key.js",
+    "./create_wa_signature.js": "./create_wa_signature.js"
+  },
+  "license": "MIT",
+  "author": "H",
+  "type": "module",
+  "scripts": {
+    "eslint": "eslint .",
+    "test": "npm run eslint && npm run mocha",
+    "mocha": "mocha",
+    "prepublishOnly": "npm run build && npm run minify && npm run mocha",
+    "build": "tsc",
+    "minify": "node ./minify.js"
+  },
+  "devDependencies": {
+    "@types/chai": "^5.0.1",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^22.10.5",
+    "@typescript-eslint/eslint-plugin": "^8.19.1",
+    "@typescript-eslint/parser": "^8.19.1",
+    "chai": "^5.1.2",
+    "esbuild": "^0.24.2",
+    "eslint": "^8.34.0",
+    "eslint-plugin-simple-import-sort": "^10.0.0",
+    "mocha": "^11.0.1",
+    "prettier": "^2.8.4",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "base58-js": "^3.0.2",
+    "eosio-wasm-js": "^5.0.2",
+    "ripemd160-js": "^3.0.4"
+  }
+}
