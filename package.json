@@ -1,6 +1,6 @@
 {
   "name": "antelope-webauthn",
-  "version": "1.0.0-rc.0",
+  "version": "1.0.0-rc.1",
   "description": "A WebAuthn.io crypto utility for generating signatures, creating public keys, and verifying them, designed for Antelope-based blockchains such as EOSIO, WAX, and other related platforms. This package provides convenient tools to handle key pair generation, signing operations, and signature verification, supporting the WebAuthn standard for secure, decentralized authentication.",
   "engines": {
     "node": ">=18.0.0",

@@ -4,6 +4,7 @@
 
 ### Patch
 
+- Fixed type in create webauth-signature
 - readme updates.
 
 ## v.1.0.0-rc
