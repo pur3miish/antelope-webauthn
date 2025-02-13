@@ -1,1 +1,26 @@
 node_modules/
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+
+# npm package lock files (for a consistent environment, you may decide to track these)
+# package-lock.json
+# yarn.lock
+
+# IDE and editor folders
+.vscode/
+.idea/
+
+# Coverage output (if using a testing tool like Jest or Mocha)
+coverage/
+
+# Other system-specific files
+*.swp
+*.swo
