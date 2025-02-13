@@ -1340,4 +1340,5 @@ function calculateRecID(public_key, { r, s }, hash) {
   if (pubkey.px == recovered_key_1.x) return 1;
   throw new Error("Unable to calculate the recovery ID for signature.");
 }
+
 export { calculateRecID as default };
