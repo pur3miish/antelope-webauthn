@@ -1,6 +1,26 @@
 # Antelope webauthn changelog
 
+## v.1.0.0-rc.6
+
+- Create wa signature now takes device key list as argument.
+
+## v.1.0.0-rc.5
+
+- Bug fixed for sha256 so that it can work in node js context.
+
+## v.1.0.0-rc.4
+
+- Typeo fixed for exports and files to include for verify_wa_signature.
+
+## v.1.0.0-rc.2
+
+- Redeployed.
+
 ## v.1.0.0-rc.1
+
+## Minor
+
+- Added verify signature
 
 ### Patch
 
