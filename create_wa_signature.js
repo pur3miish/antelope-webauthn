@@ -1,5 +1,5 @@
 import antelopeWebAuthnSignature from "./_utils/webauthn_signature.js";
-export default async function createWebAuthnSignature(device_key, hash) {
+export default async function createWebAuthnSignature(device_keys, hash) {
     const challenge = typeof hash == "string"
         ? (() => {
             const matches = hash.match(/[a-fA-F0-9]{2}/gmu);
@@ -10,16 +10,14 @@ export default async function createWebAuthnSignature(device_key, hash) {
                 throw new Error("Invalid hash string format");
         })()
         : hash;
-    const allowCredentials = [
-        {
-            id: Uint8Array.from(window
-                .atob(device_key.credential_id.replace(/-/gmu, "+").replace(/_/gmu, "/"))
-                .split("")
-                .map((i) => i.charCodeAt(0))),
-            type: "public-key",
-            alg: -7,
-        },
-    ];
+    const allowCredentials = device_keys.map((key) => ({
+        id: Uint8Array.from(window
+            .atob(key.credential_id.replace(/-/gmu, "+").replace(/_/gmu, "/"))
+            .split("")
+            .map((i) => i.charCodeAt(0))),
+        type: "public-key",
+        alg: -7,
+    }));
     const assertation = (await window.navigator.credentials.get({
         publicKey: {
             allowCredentials,
@@ -29,6 +27,9 @@ export default async function createWebAuthnSignature(device_key, hash) {
         },
     }));
     const response = assertation.response;
+    const device_key = device_keys.find((x) => x.credential_id == assertation.id);
+    if (!device_key?.public_key)
+        throw new Error("We were unable to produce a valid signature with the device keys you provided.");
     const antelope_signature = antelopeWebAuthnSignature(response, device_key.public_key);
     return antelope_signature;
 }
