@@ -1,5 +1,6 @@
 import binary_to_base58 from "base58-js/binary_to_base58.js";
 import ripemd160 from "ripemd160-js/ripemd160.js";
+
 import decodeCBOR from "./cbor-decode.js";
 
 export default async function createAntelopeWebAuthnPublicKey({
