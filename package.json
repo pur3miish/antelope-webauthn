@@ -18,7 +18,8 @@
     "public",
     "key",
     "PUB_WA",
-    "SIG_WA"
+    "SIG_WA",
+    "verify"
   ],
   "files": [
     "_utils/",
@@ -29,7 +30,8 @@
   ],
   "exports": {
     "./create_wa_public_key.js": "./create_wa_public_key.js",
-    "./create_wa_signature.js": "./create_wa_signature.js"
+    "./create_wa_signature.js": "./create_wa_signature.js",
+    "./verify_wa_signature.js": "./verify_wa_signature.js"
   },
   "license": "MIT",
   "author": "H",
@@ -61,6 +63,7 @@
   "dependencies": {
     "base58-js": "^3.0.2",
     "eosio-wasm-js": "^5.0.2",
-    "ripemd160-js": "^3.0.4"
+    "ripemd160-js": "^3.0.4",
+    "universal-sha256-js": "^2.0.0"
   }
 }
