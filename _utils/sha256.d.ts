@@ -1,1 +1,1 @@
-export default function sha256(data: Uint8Array): Promise<Uint8Array>;
+export default function sha256(data: any): Promise<Uint8Array<ArrayBuffer>>;
