@@ -1,5 +1,5 @@
 import antelopeWebAuthnPublicKey from "./_utils/webauthn-public-key.js";
-export default async function createWebAuthnKey({ id = new Uint8Array(16), email, displayName, relayingParty, challenge, }) {
+export default async function createWebAuthnKey({ id = crypto.getRandomValues(new Uint8Array(16)), email, displayName, relayingParty, challenge, }) {
     if (!navigator?.credentials?.create)
         throw new Error("Browser does not support webauthn.");
     const cred = (await navigator.credentials.create({
@@ -17,5 +17,5 @@ export default async function createWebAuthnKey({ id = new Uint8Array(16), email
     }));
     const response = cred.response;
     const antelope_public_key = await antelopeWebAuthnPublicKey(response);
-    return { public_key: antelope_public_key, credential_id: cred.id };
+    return { public_key: antelope_public_key, credential_id: cred.id, id };
 }
