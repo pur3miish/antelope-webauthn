@@ -23,6 +23,8 @@
   ],
   "files": [
     "_utils/",
+    "verify_wa_signature.js",
+    "verify_wa_signature.d.ts",
     "create_wa_public_key.js",
     "create_wa_public_key.d.ts",
     "create_wa_signature.js",
