@@ -1,8 +1,8 @@
 # Antelope webauthn changelog
 
-## v.1.0.0-rc.7
+## v.1.0.0
 
-- Create wa signature now takes device key list as argument.
+- stable release
 
 ## v.1.0.0-rc.5
 
