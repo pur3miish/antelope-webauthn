@@ -1,5 +1,6 @@
 import base58_to_binary from "base58-js/base58_to_binary.js";
 
+import assertBrowserCompatibility from "./_utils/browser-compatability";
 import decodeLEB128 from "./_utils/decodeLEB128";
 import sha256 from "./_utils/sha256";
 
@@ -116,6 +117,7 @@ export default async function verifyWebAuthnSignature(
   signature: string,
   public_key: string
 ): Promise<boolean> {
+  assertBrowserCompatibility();
   const sig = base58_to_binary(signature.replace("SIG_WA_", "")).slice(0, -4);
   const r = sig.slice(1, 33);
   const s = sig.slice(33, 65);

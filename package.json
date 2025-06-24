@@ -1,17 +1,23 @@
 {
   "name": "antelope-webauthn",
-  "version": "1.0.0-rc.7",
-  "description": "A WebAuthn.io crypto utility for generating signatures, creating public keys, and verifying them, designed for Antelope-based blockchains such as EOSIO, WAX, and other related platforms. This package provides convenient tools to handle key pair generation, signing operations, and signature verification, supporting the WebAuthn standard for secure, decentralized authentication.",
+  "version": "1.0.0",
+  "description": "A WebAuthn.io crypto utility for generating signatures, creating public keys, and verifying them, designed for Antelope-based blockchains such as Vaulta, WAX, and other related platforms. This package provides convenient tools to handle key pair generation, signing operations, and signature verification, supporting the WebAuthn standard for secure, decentralized authentication.",
   "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=7.0.0"
+    "node": ">=18.0.0"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pur3miish/antelope-webauthn"
+  },
+  "sideEffects": false,
+  "main": "index.js",
+  "types": "index.d.ts",
   "keywords": [
     "webauthn",
+    "Vaulta",
     "EOS",
     "TELOS",
     "WAX",
-    "XRP",
     "JUNGLE",
     "XRP",
     "signature",
@@ -28,12 +34,28 @@
     "create_wa_public_key.js",
     "create_wa_public_key.d.ts",
     "create_wa_signature.js",
-    "create_wa_signature.d.ts"
+    "create_wa_signature.d.ts",
+    "index.js",
+    "index.d.ts",
+    "package.json"
   ],
   "exports": {
-    "./create_wa_public_key.js": "./create_wa_public_key.js",
-    "./create_wa_signature.js": "./create_wa_signature.js",
-    "./verify_wa_signature.js": "./verify_wa_signature.js"
+    ".": {
+      "import": "./index.js",
+      "types": "./index.d.ts"
+    },
+    "./create_wa_public_key": {
+      "import": "./create_wa_public_key.js",
+      "types": "./create_wa_public_key.d.ts"
+    },
+    "./create_wa_signature": {
+      "import": "./create_wa_signature.js",
+      "types": "./create_wa_signature.d.ts"
+    },
+    "./verify_wa_signature": {
+      "import": "./verify_wa_signature.js",
+      "types": "./verify_wa_signature.d.ts"
+    }
   },
   "license": "MIT",
   "author": "H",
@@ -63,7 +85,7 @@
     "typescript": "^5.7.3"
   },
   "dependencies": {
-    "base58-js": "^3.0.2",
+    "base58-js": "^3.0.3",
     "eosio-wasm-js": "^5.0.2",
     "ripemd160-js": "^3.0.4",
     "universal-sha256-js": "^2.0.0"

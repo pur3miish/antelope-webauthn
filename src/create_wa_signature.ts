@@ -1,3 +1,4 @@
+import assertBrowserCompatibility from "./_utils/browser-compatability";
 import antelopeWebAuthnSignature from "./_utils/webauthn_signature.js";
 
 export type device_key = {
@@ -10,6 +11,7 @@ export default async function createWebAuthnSignature(
   device_keys: device_key[],
   hash: Uint8Array | string
 ) {
+  assertBrowserCompatibility();
   const challenge =
     typeof hash == "string"
       ? (() => {

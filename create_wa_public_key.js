@@ -1,7 +1,7 @@
+import assertBrowserCompatibility from "./_utils/browser-compatability";
 import antelopeWebAuthnPublicKey from "./_utils/webauthn-public-key.js";
 export default async function createWebAuthnKey({ id = crypto.getRandomValues(new Uint8Array(16)), email, displayName, relayingParty, challenge, }) {
-    if (!navigator?.credentials?.create)
-        throw new Error("Browser does not support webauthn.");
+    assertBrowserCompatibility();
     const cred = (await navigator.credentials.create({
         publicKey: {
             rp: { id: relayingParty, name: relayingParty },
