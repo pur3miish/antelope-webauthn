@@ -4,9 +4,9 @@ export type createWebAuthnKeyArgs = {
      */
     id: Uint8Array;
     /**
-     * User email address or username
+     * Key name
      */
-    email: string;
+    name: string;
     /**
      * Users display name
      */
@@ -25,4 +25,4 @@ export type device_key = {
     public_key: string;
     credential_id: string;
 };
-export default function createWebAuthnKey({ id, email, displayName, relayingParty, challenge, }: createWebAuthnKeyArgs): Promise<device_key>;
+export default function createWebAuthnKey({ id, name, displayName, relayingParty, challenge, }: createWebAuthnKeyArgs): Promise<device_key>;

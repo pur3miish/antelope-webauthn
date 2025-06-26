@@ -62,7 +62,7 @@ const challenge = window.crypto.getRandomValues(new Uint8Array(32));
 
 // Step 3: Create a WebAuthn public key credential bound to this device
 const device_key = await createWebAuthnKey({
-  email: "user@example.com", // Used to identify the user
+  name: "key-name", // Used to identify the user
   displayName: "Example User", // Shown during credential creation
   relayingParty: window.location.hostname, // Your app’s domain
   id, // Unique identifier for the user/device

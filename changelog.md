@@ -1,5 +1,14 @@
 # Antelope webauthn changelog
 
+## v.2.0.0
+
+### Major
+
+- BREAKING: WebAuthn credentials now use `name` (device label) instead of `email` to identify/create keys.
+  - This provides better clarity when multiple devices are registered.
+  - `email` identifier will no longer be argument to create new keys with.
+  - Users must re-register their keys using the new flow.
+
 ## v.1.0.0
 
 - stable release

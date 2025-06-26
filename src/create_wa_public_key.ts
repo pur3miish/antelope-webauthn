@@ -7,9 +7,9 @@ export type createWebAuthnKeyArgs = {
    */
   id: Uint8Array;
   /**
-   * User email address or username
+   * Key name
    */
-  email: string;
+  name: string;
   /**
    * Users display name
    */
@@ -32,7 +32,7 @@ export type device_key = {
 
 export default async function createWebAuthnKey({
   id = crypto.getRandomValues(new Uint8Array(16)),
-  email,
+  name,
   displayName,
   relayingParty,
   challenge,
@@ -42,7 +42,7 @@ export default async function createWebAuthnKey({
   const cred = (await navigator.credentials.create({
     publicKey: {
       rp: { id: relayingParty, name: relayingParty },
-      user: { id, name: email, displayName } as PublicKeyCredentialUserEntity,
+      user: { id, name, displayName } as PublicKeyCredentialUserEntity,
       pubKeyCredParams: [
         { type: "public-key", alg: -7 },
         { type: "public-key", alg: -257 },

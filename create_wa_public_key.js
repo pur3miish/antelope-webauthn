@@ -1,11 +1,11 @@
 import assertBrowserCompatibility from "./_utils/browser-compatability";
 import antelopeWebAuthnPublicKey from "./_utils/webauthn-public-key.js";
-export default async function createWebAuthnKey({ id = crypto.getRandomValues(new Uint8Array(16)), email, displayName, relayingParty, challenge, }) {
+export default async function createWebAuthnKey({ id = crypto.getRandomValues(new Uint8Array(16)), name, displayName, relayingParty, challenge, }) {
     assertBrowserCompatibility();
     const cred = (await navigator.credentials.create({
         publicKey: {
             rp: { id: relayingParty, name: relayingParty },
-            user: { id, name: email, displayName },
+            user: { id, name, displayName },
             pubKeyCredParams: [
                 { type: "public-key", alg: -7 },
                 { type: "public-key", alg: -257 },
