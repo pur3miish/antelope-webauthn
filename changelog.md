@@ -1,5 +1,20 @@
 # Antelope webauthn changelog
 
+## v.3.0.0
+
+### Major - 2026-03-12
+
+### Changed
+
+- Updated `createWebAuthnKey` to accept the native `CredentialCreationOptions` object directly.
+- This aligns the API with the WebAuthn specification and allows developers full control over credential creation parameters such as authenticator selection, resident key preferences, and attestation configuration.
+- The library no longer constructs credential creation options internally.
+
+### Added
+
+- Added `antelope_public_key` to the returned credential object.
+- The function now returns:
+
 ## v.2.0.0
 
 ### Major
