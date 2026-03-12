@@ -1,24 +1,37 @@
-# Antelope-webauthn
+# antelope-webauthn
 
 [![npm version](https://img.shields.io/npm/v/antelope-webauthn.svg)](https://www.npmjs.com/package/antelope-webauthn) [![npm downloads](https://img.shields.io/npm/dm/antelope-webauthn.svg)](https://www.npmjs.com/package/antelope-webauthn) [![license](https://img.shields.io/npm/l/antelope-webauthn.svg)](https://github.com/your-repo/antelope-webauthn/blob/main/LICENSE)
 
-A WebAuthn-based crypto utility for generating and verifying signatures on Antelope blockchains (e.g., EOS, WAX, XRP, Telos) using the P-256 curve. It leverages WebAuthn’s secure, hardware-backed authentication to create keys and signatures (PUB_WA and SIG_WA) for signing blockchain transactions.
+`antelope-webauthn` demonstrates how the **WebAuthn authentication standard** can be used to generate and use **hardware-backed cryptographic keys** for signing transactions on **Antelope-based blockchains**.
 
-This project demonstrates how [WebAuthn](https://webauthn.guide/) (Web Authentication) can be used to generate public keys and signatures for Antelope-based blockchains. WebAuthn is a web standard that provides a strong authentication mechanism using hardware-backed credentials like biometrics, security keys, or built-in device authenticators.
+Supported ecosystems include networks built on the Antelope architecture such as:
 
-## ✨ Features
+- WAX
+- Telos
+- FIO
+- XPR Network
+- Vaulta
+- Other Antelope-based DPoS chains
 
-- 🔐 Non-exportable keys bound to the user’s device.
+Antelope blockchains use **public/private key cryptography** to authorize transactions. Traditionally these keys are generated and stored in software wallets, browser extensions, mobile wallets, or dedicated hardware wallets.
 
-- 📎 Creates Antelope-compatible public keys (PUB*WA*…) and signatures (SIG*WA*…).
+This project takes a different approach by using **WebAuthn authenticators** to generate and protect the signing key material.
 
-- ✅ Verifies WebAuthn signatures using modern WebCrypto APIs.
+This provides several important properties:
 
-- 🧪 Works in modern browsers with WebAuthn support (Chrome, Firefox, Edge, Safari ≥ 18.5).
+- **Hardware-backed security** through platform authenticators and security keys
+- **Non-exportable private keys** that remain protected by the authenticator
+- **Biometric authorization** through Touch ID, Face ID, Windows Hello, and Android biometrics
+- **Support for external security keys** such as YubiKeys
+- Optional **passkey-style synchronization** where supported by the credential manager
+- A path to using modern device security models for Antelope transaction signing
 
-### Disclaimer
+The library converts WebAuthn-generated key material into **Antelope-compatible key formats**:
 
-antelope-webauthn is an independent open-source project, not affiliated with any organizations. Use at your own risk.
+- `PUB_WA_*` public keys
+- `SIG_WA_*` signatures
+
+These formats allow WebAuthn credentials to be used directly in Antelope-based signing workflows.
 
 ## Installation
 
@@ -54,30 +67,54 @@ import {
 } from "antelope-webauthn";
 
 // Step 1: Generate a secure random user/device ID (16 bytes)
-const id = window.crypto.getRandomValues(new Uint8Array(16));
+const userId = crypto.getRandomValues(new Uint8Array(16));
 
 // Step 2: Generate a random challenge (32 bytes)
-// This should come from your backend or be a hash of the transaction data
-const challenge = window.crypto.getRandomValues(new Uint8Array(32));
+// In production this should come from your backend
+const challenge = crypto.getRandomValues(new Uint8Array(32));
 
-// Step 3: Create a WebAuthn public key credential bound to this device
-const device_key = await createWebAuthnKey({
-  name: "key-name", // Used to identify the user
-  displayName: "Example User", // Shown during credential creation
-  relayingParty: window.location.hostname, // Your app’s domain
-  id, // Unique identifier for the user/device
-  challenge, // Challenge to ensure legitimacy
+// Step 3: Create a WebAuthn credential
+const credential = await createWebAuthnKey({
+  publicKey: {
+    rp: {
+      name: "Example App",
+      id: window.location.hostname,
+    },
+
+    user: {
+      id: userId,
+      name: "user@example.com",
+      displayName: "Example User",
+    },
+
+    challenge,
+
+    pubKeyCredParams: [
+      { type: "public-key", alg: -7 }, // ES256 / P-256
+    ],
+
+    authenticatorSelection: {
+      residentKey: "preferred",
+      userVerification: "preferred",
+    },
+
+    timeout: 60000,
+    attestation: "none",
+  },
 });
 
-// Step 4: Sign a 32-byte hash (e.g., a serialized Antelope transaction hash)
-const messageHash = new Uint8Array(32).fill(2); // Replace with a real SHA-256 hash
-const signature = await createWebAuthnSignature(device_key, messageHash);
+// The returned credential contains the Antelope public key
+const antelopePublicKey = credential.antelope_public_key;
 
-// Step 5: Verify the signature using the device’s public key
-const verified = await verifyWebAuthnSignature(
-  signature,
-  device_key.public_key
-);
+console.log("Antelope Public Key:", antelopePublicKey);
+
+// Step 4: Sign a 32-byte hash (e.g., an Antelope transaction digest)
+const messageHash = new Uint8Array(32).fill(2); // replace with real SHA-256 hash
+
+const signature = await createWebAuthnSignature(credential, messageHash);
+
+// Step 5: Verify the signature
+const verified = await verifyWebAuthnSignature(signature, antelopePublicKey);
 
 console.log("Signature verified:", verified);
 ```
