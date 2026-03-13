@@ -1,29 +1,19 @@
-import assertBrowserCompatibility from "./_utils/browser-compatability";
+import assertBrowserCompatibility from "./_utils/browser-compatability.js";
+import { credentialIdToUint8Array } from "./_utils/credential-id-to-uint8array.js";
+import { hexToUint8Array } from "./_utils/hex-to-uint8array.js";
 import antelopeWebAuthnSignature from "./_utils/webauthn_signature.js";
-export default async function createWebAuthnSignature(device_keys, hash) {
+import createAuthenticatorAssertionResponse from "./create-authenticator-assertion-response.js";
+export default async function createAntelopeSignature(device_keys, hash) {
     assertBrowserCompatibility();
-    const challenge = typeof hash == "string"
-        ? (() => {
-            const matches = hash.match(/[a-fA-F0-9]{2}/gmu);
-            if (matches)
-                return Uint8Array.from(matches.map((x) => Number(`0x${x}`)));
-            // Handle the case where match returns null (no valid hex found)
-            else
-                throw new Error("Invalid hash string format");
-        })()
-        : hash;
     const allowCredentials = device_keys.map((key) => ({
-        id: Uint8Array.from(window
-            .atob(key.credential_id.replace(/-/gmu, "+").replace(/_/gmu, "/"))
-            .split("")
-            .map((i) => i.charCodeAt(0))),
+        id: credentialIdToUint8Array(key.credential_id),
         type: "public-key",
         alg: -7,
     }));
-    const assertation = (await window.navigator.credentials.get({
+    const assertation = (await createAuthenticatorAssertionResponse({
         publicKey: {
             allowCredentials,
-            challenge,
+            challenge: typeof hash == "string" ? hexToUint8Array(hash) : hash,
             timeout: 6e4,
             userVerification: "required",
         },

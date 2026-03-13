@@ -1,4 +1,4 @@
-import assertBrowserCompatibility from "./_utils/browser-compatability";
+import assertBrowserCompatibility from "./_utils/browser-compatability.js";
 import antelopeWebAuthnPublicKey from "./_utils/webauthn-public-key.js";
 
 export default async function createWebAuthnKey(
