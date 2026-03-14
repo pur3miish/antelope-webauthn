@@ -1,19 +1,23 @@
 import assertBrowserCompatibility from "./_utils/browser-compatability.js";
 import { credentialIdToUint8Array } from "./_utils/credential-id-to-uint8array.js";
 import { hexToUint8Array } from "./_utils/hex-to-uint8array.js";
-import antelopeWebAuthnSignature from "./_utils/webauthn_signature.js";
-import createAuthenticatorAssertionResponse from "./create-authenticator-assertion-response.js";
+import createAuthenticatorAssertionResponse from "./authenticator-assertion.js";
+import antelopeWebAuthnSignature from "./create-antelope-signature.js";
 
 export type device_key = {
-  id: string;
   public_key: string;
   credential_id: string;
 };
 
-export default async function createAntelopeSignature(
+/**
+ * Function takes a device key and a hash of a challenge and initates a request to sign from a credential.
+ * This enables users to generate an antelope compatible signature using their webauthn credentials.
+ * The signature can then be verified on chain using the public key associated with the credential.
+ */
+export default async function antelopeSign(
   device_keys: device_key[],
   hash: Uint8Array | string
-) {
+): Promise<string> {
   assertBrowserCompatibility();
 
   const allowCredentials = device_keys.map((key) => ({

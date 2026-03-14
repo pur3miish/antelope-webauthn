@@ -2,7 +2,7 @@ import assertBrowserCompatibility from "./_utils/browser-compatability.js";
 import { validateChallenge } from "./_utils/validate-challenge.js";
 
 /**
- *
+ * Creates a new webauthn signature response
  * @example
  * ```ts
  * const hexString = "0000000000000000000000000000000000000000000000000000000000000000";
@@ -23,7 +23,7 @@ import { validateChallenge } from "./_utils/validate-challenge.js";
  * });
  * ```
  */
-export default async function createAuthenticatorAssertionResponse(
+export default async function authenticatorAssertion(
   options: CredentialRequestOptions
 ): Promise<PublicKeyCredential> {
   assertBrowserCompatibility();

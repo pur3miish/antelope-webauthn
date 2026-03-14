@@ -3,12 +3,30 @@ import binary_to_base58 from "base58-js/binary_to_base58.js";
 import varuint32 from "eosio-wasm-js/varuint32.js";
 import ripemd160 from "ripemd160-js/ripemd160.js";
 
-import { array_to_number } from "./array_to_number.js";
-import calculateRecID from "./calculate_recovery_id.js";
-import decodeDER from "./decode-der.js";
-import sha256 from "./sha256.js";
+import { array_to_number } from "./_utils/array_to_number.js";
+import calculateRecID from "./_utils/calculate_recovery_id.js";
+import decodeDER from "./_utils/decode-der.js";
+import sha256 from "./_utils/sha256.js";
 
-export default async function webAuthSig(
+/**
+ * Creates an Antelope compatible signature from a webauthn assertion response.
+ * The signature can then be verified on chain using the public key associated with the credential.
+ * @example
+ * ```ts
+ * const signature = await createAntelopeSignature(
+ *   {
+ *     authenticatorData: new Uint8Array([...]),
+ *     clientDataJSON: new Uint8Array([...]),
+ *     signature: new Uint8Array([...]),
+ *   },
+ *   "PUB_WA_6eRs44BYTJKPrGTCqR5TuMSQbCrZsNdNSXTHNuNitSdTfVQe8JSf89qy7JwxEnFW7"
+ * );
+ * ```
+ * @param param0 - The response from the authenticator after requesting an assertion.
+ * @param public_key - The Antelope compatible public key associated with the credential used to sign the assertion.
+ * @returns
+ */
+export default async function createAntelopeSignature(
   {
     authenticatorData,
     signature,

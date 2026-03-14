@@ -1,7 +1,12 @@
 import binary_to_base58 from "base58-js/binary_to_base58.js";
 import ripemd160 from "ripemd160-js/ripemd160.js";
-import decodeCBOR from "./cbor-decode.js";
-import sha256 from "./sha256.js";
+import decodeCBOR from "./_utils/cbor-decode.js";
+/**
+ * Creates an Antelope compatible public key from a webauthn attestation response.
+ * The public key can then be used to verify signatures on chain.
+ * @param attestationResponse - The response from the authenticator after creating a new credential.
+ * @returns An Antelope compatible public key string.
+ */
 export default async function createAntelopeWebAuthnPublicKey({ attestationObject, clientDataJSON, }) {
     const { authData } = decodeCBOR(attestationObject);
     const clientData = JSON.parse(new Uint8Array(clientDataJSON).reduce((acc, i) => (acc += String.fromCharCode(i)), ""));
@@ -10,7 +15,7 @@ export default async function createAntelopeWebAuthnPublicKey({ attestationObjec
     const ripid_chars = [];
     for (let i = 0; i < rpid.length; i++)
         ripid_chars.push(rpid[i].charCodeAt(0));
-    const check_hash = await sha256(Uint8Array.from(ripid_chars));
+    const check_hash = new Uint8Array(await crypto.subtle.digest("SHA-256", Uint8Array.from(ripid_chars)));
     new Uint8Array(check_hash).forEach((i, x) => {
         if (i != rpid_hash[x])
             throw new Error("Invalid rpid hash");

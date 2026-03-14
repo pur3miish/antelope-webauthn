@@ -1,5 +1,5 @@
 /**
- *
+ * Creates a new webauthn signature response
  * @example
  * ```ts
  * const hexString = "0000000000000000000000000000000000000000000000000000000000000000";
@@ -20,4 +20,4 @@
  * });
  * ```
  */
-export default function createAuthenticatorAssertionResponse(options: CredentialRequestOptions): Promise<PublicKeyCredential>;
+export default function authenticatorAssertion(options: CredentialRequestOptions): Promise<PublicKeyCredential>;

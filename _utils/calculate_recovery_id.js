@@ -1,1 +1,291 @@
-var Q=e=>new DataView(e.buffer,e.byteOffset,e.byteLength),U=(e,r)=>e<<32-r|e>>>r,Et=class{clone(){return this._cloneInto()}};function Bt(e){let r=n=>e().update(toBytes(n)).digest(),t=e();return r.outputLen=t.outputLen,r.blockLen=t.blockLen,r.create=()=>e(),r}function vt(e=32){if(crypto&&typeof crypto.getRandomValues=="function")return crypto.getRandomValues(new Uint8Array(e));if(crypto&&typeof crypto.randomBytes=="function")return crypto.randomBytes(e);throw new Error("crypto.getRandomValues must be defined")}var xt=(e,r,t)=>e&r^~e&t,At=(e,r,t)=>e&r^e&t^r&t,Ot=class extends Et{constructor(e,r,t,n){super(),this.blockLen=e,this.outputLen=r,this.padOffset=t,this.isLE=n,this.finished=!1,this.length=0,this.pos=0,this.destroyed=!1,this.buffer=new Uint8Array(e),this.view=Q(this.buffer)}update(e){aexists(this);let{view:r,buffer:t,blockLen:n}=this;e=toBytes(e);let s=e.length;for(let o=0;o<s;){let u=Math.min(n-this.pos,s-o);if(u===n){let a=Q(e);for(;n<=s-o;o+=n)this.process(a,o);continue}t.set(e.subarray(o,o+u),this.pos),this.pos+=u,o+=u,this.pos===n&&(this.process(r,0),this.pos=0)}return this.length+=e.length,this.roundClean(),this}digestInto(e){aexists(this),aoutput(e,this),this.finished=!0;let{buffer:r,view:t,blockLen:n,isLE:s}=this,{pos:o}=this;r[o++]=128,this.buffer.subarray(o).fill(0),this.padOffset>n-o&&(this.process(t,0),o=0);for(let y=o;y<n;y++)r[y]=0;setBigUint64(t,n-8,BigInt(this.length*8),s),this.process(t,0);let u=Q(e),a=this.outputLen;if(a%4)throw new Error("_sha2: outputLen should be aligned to 32bit");let i=a/4,c=this.get();if(i>c.length)throw new Error("_sha2: outputLen bigger than state");for(let y=0;y<i;y++)u.setUint32(4*y,c[y],s)}digest(){let{buffer:e,outputLen:r}=this;this.digestInto(e);let t=e.slice(0,r);return this.destroy(),t}_cloneInto(e){e||(e=new this.constructor),e.set(...this.get());let{blockLen:r,buffer:t,length:n,finished:s,destroyed:o,pos:u}=this;return e.length=n,e.pos=u,e.finished=s,e.destroyed=o,n%r&&e.buffer.set(t),e}},St=new Uint32Array([1116352408,1899447441,3049323471,3921009573,961987163,1508970993,2453635748,2870763221,3624381080,310598401,607225278,1426881987,1925078388,2162078206,2614888103,3248222580,3835390401,4022224774,264347078,604807628,770255983,1249150122,1555081692,1996064986,2554220882,2821834349,2952996808,3210313671,3336571891,3584528711,113926993,338241895,666307205,773529912,1294757372,1396182291,1695183700,1986661051,2177026350,2456956037,2730485921,2820302411,3259730800,3345764771,3516065817,3600352804,4094571909,275423344,430227734,506948616,659060556,883997877,958139571,1322822218,1537002063,1747873779,1955562222,2024104815,2227730452,2361852424,2428436474,2756734187,3204031479,3329325298]),T=new Uint32Array([1779033703,3144134277,1013904242,2773480762,1359893119,2600822924,528734635,1541459225]),k=new Uint32Array(64),qt=class extends Ot{constructor(){super(64,32,8,!1),this.A=T[0]|0,this.B=T[1]|0,this.C=T[2]|0,this.D=T[3]|0,this.E=T[4]|0,this.F=T[5]|0,this.G=T[6]|0,this.H=T[7]|0}get(){let{A:e,B:r,C:t,D:n,E:s,F:o,G:u,H:a}=this;return[e,r,t,n,s,o,u,a]}set(e,r,t,n,s,o,u,a){this.A=e|0,this.B=r|0,this.C=t|0,this.D=n|0,this.E=s|0,this.F=o|0,this.G=u|0,this.H=a|0}process(e,r){for(let y=0;y<16;y++,r+=4)k[y]=e.getUint32(r,!1);for(let y=16;y<64;y++){let h=k[y-15],A=k[y-2],O=U(h,7)^U(h,18)^h>>>3,p=U(A,17)^U(A,19)^A>>>10;k[y]=p+k[y-7]+O+k[y-16]|0}let{A:t,B:n,C:s,D:o,E:u,F:a,G:i,H:c}=this;for(let y=0;y<64;y++){let h=U(u,6)^U(u,11)^U(u,25),A=c+h+xt(u,a,i)+St[y]+k[y]|0,O=(U(t,2)^U(t,13)^U(t,22))+At(t,n,s)|0;c=i,i=a,a=u,u=o+A|0,o=s,s=n,n=t,t=A+O|0}t=t+this.A|0,n=n+this.B|0,s=s+this.C|0,o=o+this.D|0,u=u+this.E|0,a=a+this.F|0,i=i+this.G|0,c=c+this.H|0,this.set(t,n,s,o,u,a,i,c)}roundClean(){k.fill(0)}destroy(){this.set(0,0,0,0,0,0,0,0),this.buffer.fill(0)}},Rt=Bt(()=>new qt),ct=0n,Nt=1n,It=2n;function Y(e){return e instanceof Uint8Array||ArrayBuffer.isView(e)&&e.constructor.name==="Uint8Array"}function Lt(e){if(!Y(e))throw new Error("Uint8Array expected")}var Ft=Array.from({length:256},(e,r)=>r.toString(16).padStart(2,"0"));function ot(e){Lt(e);let r="";for(let t=0;t<e.length;t++)r+=Ft[e[t]];return r}function zt(e){if(typeof e!="string")throw new Error("hex string expected, got "+typeof e);return e===""?ct:BigInt("0x"+e)}var C={_0:48,_9:57,A:65,F:70,a:97,f:102};function ut(e){if(e>=C._0&&e<=C._9)return e-C._0;if(e>=C.A&&e<=C.F)return e-(C.A-10);if(e>=C.a&&e<=C.f)return e-(C.a-10)}function M(e){if(typeof e!="string")throw new Error("hex string expected, got "+typeof e);let r=e.length,t=r/2;if(r%2)throw new Error("hex string expected, got unpadded hex of length "+r);let n=new Uint8Array(t);for(let s=0,o=0;s<t;s++,o+=2){let u=ut(e.charCodeAt(o)),a=ut(e.charCodeAt(o+1));if(u===void 0||a===void 0){let i=e[o]+e[o+1];throw new Error('hex string expected, got non-hex character "'+i+'" at index '+o)}n[s]=u*16+a}return n}function j(e){return zt(ot(e))}function pt(e,r){return M(e.toString(16).padStart(r*2,"0"))}function W(e,r,t){let n;if(typeof r=="string")try{n=M(r)}catch(o){throw new Error(e+" must be hex string or Uint8Array, cause: "+o)}else if(Y(r))n=Uint8Array.from(r);else throw new Error(e+" must be hex string or Uint8Array");let s=n.length;if(typeof t=="number"&&s!==t)throw new Error(e+" of length "+t+" expected, got "+s);return n}var X=e=>typeof e=="bigint"&&ct<=e;function st(e,r,t){return X(e)&&X(r)&&X(t)&&r<=e&&e<t}function G(e,r,t,n){if(!st(r,t,n))throw new Error("expected valid "+e+": "+t+" <= n < "+n+", got "+r)}var Pt=e=>(It<<BigInt(e-1))-Nt,Zt={bigint:e=>typeof e=="bigint",function:e=>typeof e=="function",boolean:e=>typeof e=="boolean",string:e=>typeof e=="string",stringOrUint8Array:e=>typeof e=="string"||Y(e),isSafeInteger:e=>Number.isSafeInteger(e),array:e=>Array.isArray(e),field:(e,r)=>r.Fp.isValid(e),hash:e=>typeof e=="function"&&Number.isSafeInteger(e.outputLen)};function J(e,r,t={}){let n=(s,o,u)=>{let a=Zt[o];if(typeof a!="function")throw new Error("invalid validator function");let i=e[s];if(!(u&&i===void 0)&&!a(i,e))throw new Error("param "+String(s)+" is invalid. Expected "+o+", got "+i)};for(let[s,o]of Object.entries(r))n(s,o,!1);for(let[s,o]of Object.entries(t))n(s,o,!0);return e}function lt(e){let r=new WeakMap;return(t,...n)=>{let s=r.get(t);if(s!==void 0)return s;let o=e(t,...n);return r.set(t,o),o}}var R=BigInt(0),q=BigInt(1),V=BigInt(2),Ut=BigInt(3),nt=BigInt(4),ft=BigInt(5),at=BigInt(8),ee=BigInt(9),Ct=BigInt(16);function P(e,r){let t=e%r;return t>=R?t:r+t}function Tt(e,r,t){if(r<R)throw new Error("invalid exponent, negatives unsupported");if(t<=R)throw new Error("invalid modulus");if(t===q)return R;let n=q;for(;r>R;)r&q&&(n=n*e%t),e=e*e%t,r>>=q;return n}function it(e,r){if(e===R)throw new Error("invert: expected non-zero number");if(r<=R)throw new Error("invert: expected positive modulus, got "+r);let t=P(e,r),n=r,s=R,o=q,u=q,a=R;for(;t!==R;){let i=n/t,c=n%t,y=s-u*i,h=o-a*i;n=t,t=c,s=u,o=a,u=y,a=h}if(n!==q)throw new Error("invert: does not exist");return P(s,r)}function kt(e){let r=(e-q)/V,t,n,s;for(t=e-q,n=0;t%V===R;t/=V,n++);for(s=V;s<e&&Tt(s,r,e)!==e-q;s++)if(s>1e3)throw new Error("Cannot find square root: likely non-prime P");if(n===1){let u=(e+q)/nt;return function(a,i){let c=a.pow(i,u);if(!a.eql(a.sqr(c),i))throw new Error("Cannot find square root");return c}}let o=(t+q)/V;return function(u,a){if(u.pow(a,r)===u.neg(u.ONE))throw new Error("Cannot find square root");let i=n,c=u.pow(u.mul(u.ONE,s),t),y=u.pow(a,o),h=u.pow(a,t);for(;!u.eql(h,u.ONE);){if(u.eql(h,u.ZERO))return u.ZERO;let A=1;for(let p=u.sqr(h);A<i&&!u.eql(p,u.ONE);A++)p=u.sqr(p);let O=u.pow(c,q<<BigInt(i-A-1));c=u.sqr(O),y=u.mul(y,O),h=u.mul(h,c),i=A}return y}}function Vt(e){if(e%nt===Ut){let r=(e+q)/nt;return function(t,n){let s=t.pow(n,r);if(!t.eql(t.sqr(s),n))throw new Error("Cannot find square root");return s}}if(e%at===ft){let r=(e-ft)/at;return function(t,n){let s=t.mul(n,V),o=t.pow(s,r),u=t.mul(n,o),a=t.mul(t.mul(u,V),o),i=t.mul(u,t.sub(a,t.ONE));if(!t.eql(t.sqr(i),n))throw new Error("Cannot find square root");return i}}return e%Ct,kt(e)}var Dt=["create","isValid","is0","neg","inv","sqrt","sqr","eql","add","sub","mul","pow","div","addN","subN","mulN","sqrN"];function Ht(e){let r={ORDER:"bigint",MASK:"bigint",BYTES:"isSafeInteger",BITS:"isSafeInteger"},t=Dt.reduce((n,s)=>(n[s]="function",n),r);return J(e,t)}function jt(e,r,t){if(t<R)throw new Error("invalid exponent, negatives unsupported");if(t===R)return e.ONE;if(t===q)return r;let n=e.ONE,s=r;for(;t>R;)t&q&&(n=e.mul(n,s)),s=e.sqr(s),t>>=q;return n}function Gt(e,r){let t=new Array(r.length),n=r.reduce((o,u,a)=>e.is0(u)?o:(t[a]=o,e.mul(o,u)),e.ONE),s=e.inv(n);return r.reduceRight((o,u,a)=>e.is0(u)?o:(t[a]=e.mul(o,t[a]),e.mul(o,u)),s),t}function wt(e,r){let t=r!==void 0?r:e.toString(2).length,n=Math.ceil(t/8);return{nBitLength:t,nByteLength:n}}function yt(e,r,t=!1,n={}){if(e<=R)throw new Error("invalid field: expected ORDER > 0, got "+e);let{nBitLength:s,nByteLength:o}=wt(e,r);if(o>2048)throw new Error("invalid field: expected ORDER of <= 2048 bytes");let u,a=Object.freeze({ORDER:e,isLE:t,BITS:s,BYTES:o,MASK:Pt(s),ZERO:R,ONE:q,create:i=>P(i,e),isValid:i=>{if(typeof i!="bigint")throw new Error("invalid field element: expected bigint, got "+typeof i);return R<=i&&i<e},is0:i=>i===R,isOdd:i=>(i&q)===q,neg:i=>P(-i,e),eql:(i,c)=>i===c,sqr:i=>P(i*i,e),add:(i,c)=>P(i+c,e),sub:(i,c)=>P(i-c,e),mul:(i,c)=>P(i*c,e),pow:(i,c)=>jt(a,i,c),div:(i,c)=>P(i*it(c,e),e),sqrN:i=>i*i,addN:(i,c)=>i+c,subN:(i,c)=>i-c,mulN:(i,c)=>i*c,inv:i=>it(i,e),sqrt:n.sqrt||(i=>(u||(u=Vt(e)),u(a,i))),invertBatch:i=>Gt(a,i),cmov:(i,c,y)=>y?c:i,toBytes:i=>t?numberToBytesLE(i,o):pt(i,o),fromBytes:i=>{if(i.length!==o)throw new Error("Field.fromBytes: expected "+o+" bytes, got "+i.length);return t?bytesToNumberLE(i):j(i)}});return Object.freeze(a)}var dt=BigInt(0),K=BigInt(1);function $(e,r){let t=r.negate();return e?t:r}function gt(e,r){if(!Number.isSafeInteger(e)||e<=0||e>r)throw new Error("invalid window size, expected [1.."+r+"], got W="+e)}function _(e,r){gt(e,r);let t=Math.ceil(r/e)+1,n=2**(e-1);return{windows:t,windowSize:n}}var tt=new WeakMap,mt=new WeakMap;function et(e){return mt.get(e)||1}function Kt(e,r){return{constTimeNegate:$,hasPrecomputes(t){return et(t)!==1},unsafeLadder(t,n,s=e.ZERO){let o=t;for(;n>dt;)n&K&&(s=s.add(o)),o=o.double(),n>>=K;return s},precomputeWindow(t,n){let{windows:s,windowSize:o}=_(n,r),u=[],a=t,i=a;for(let c=0;c<s;c++){i=a,u.push(i);for(let y=1;y<o;y++)i=i.add(a),u.push(i);a=i.double()}return u},wNAF(t,n,s){let{windows:o,windowSize:u}=_(t,r),a=e.ZERO,i=e.BASE,c=BigInt(2**t-1),y=2**t,h=BigInt(t);for(let A=0;A<o;A++){let O=A*u,p=Number(s&c);s>>=h,p>u&&(p-=y,s+=K);let l=O,f=O+Math.abs(p)-1,d=A%2!==0,w=p<0;p===0?i=i.add($(d,n[l])):a=a.add($(w,n[f]))}return{p:a,f:i}},wNAFUnsafe(t,n,s,o=e.ZERO){let{windows:u,windowSize:a}=_(t,r),i=BigInt(2**t-1),c=2**t,y=BigInt(t);for(let h=0;h<u;h++){let A=h*a;if(s===dt)break;let O=Number(s&i);if(s>>=y,O>a&&(O-=c,s+=K),O===0)continue;let p=n[A+Math.abs(O)-1];O<0&&(p=p.negate()),o=o.add(p)}return o},getPrecomputes(t,n,s){let o=tt.get(n);return o||(o=this.precomputeWindow(n,t),t!==1&&tt.set(n,s(o))),o},wNAFCached(t,n,s){let o=et(t);return this.wNAF(o,this.getPrecomputes(o,t,s),n)},wNAFCachedUnsafe(t,n,s,o){let u=et(t);return u===1?this.unsafeLadder(t,n,o):this.wNAFUnsafe(u,this.getPrecomputes(u,t,s),n,o)},setWindowSize(t,n){gt(n,r),mt.set(t,n),tt.delete(t)}}}function bt(e){return Ht(e.Fp),J(e,{n:"bigint",h:"bigint",Gx:"field",Gy:"field"},{nBitLength:"isSafeInteger",nByteLength:"isSafeInteger"}),Object.freeze({...wt(e.n,e.nBitLength),...e,p:e.Fp.ORDER})}function Mt(e){let r=bt(e);J(r,{a:"field",b:"field"},{allowedPrivateKeyLengths:"array",wrapPrivateKey:"boolean",isTorsionFree:"function",clearCofactor:"function",allowInfinityPoint:"boolean",fromBytes:"function",toBytes:"function"});let{endo:t,Fp:n,a:s}=r;if(t){if(!n.eql(s,n.ZERO))throw new Error("invalid endomorphism, can only be defined for Koblitz curves that have a=0");if(typeof t!="object"||typeof t.beta!="bigint"||typeof t.splitScalar!="function")throw new Error("invalid endomorphism, expected beta: bigint and splitScalar: function")}return Object.freeze({...r})}var H=BigInt(0),L=BigInt(1),ht=BigInt(3);function Wt(e){let r=Mt(e),{Fp:t}=r,n=yt(r.n,r.nBitLength),s=r.fromBytes||(p=>{let l=p.subarray(1),f=t.fromBytes(l.subarray(0,t.BYTES)),d=t.fromBytes(l.subarray(t.BYTES,2*t.BYTES));return{x:f,y:d}});function o(p){let{a:l,b:f}=r,d=t.sqr(p),w=t.mul(d,p);return t.add(t.add(w,t.mul(p,l)),f)}if(!t.eql(t.sqr(r.Gy),o(r.Gx)))throw new Error("bad generator point: equation left != right");function u(p){return st(p,L,r.n)}function a(p){let{allowedPrivateKeyLengths:l,nByteLength:f,wrapPrivateKey:d,n:w}=r;if(l&&typeof p!="bigint"){if(Y(p)&&(p=ot(p)),typeof p!="string"||!l.includes(p.length))throw new Error("invalid private key");p=p.padStart(f*2,"0")}let g;try{g=typeof p=="bigint"?p:j(W("private key",p,f))}catch{throw new Error("invalid private key, expected hex or "+f+" bytes, got "+typeof p)}return d&&(g=P(g,w)),G("private key",g,L,w),g}function i(p){if(!(p instanceof h))throw new Error("ProjectivePoint expected")}let c=lt((p,l)=>{let{px:f,py:d,pz:w}=p;if(t.eql(w,t.ONE))return{x:f,y:d};let g=p.is0();l==null&&(l=g?t.ONE:t.inv(w));let v=t.mul(f,l),E=t.mul(d,l),m=t.mul(w,l);if(g)return{x:t.ZERO,y:t.ZERO};if(!t.eql(m,t.ONE))throw new Error("invZ was invalid");return{x:v,y:E}}),y=lt(p=>{if(p.is0()){if(r.allowInfinityPoint&&!t.is0(p.py))return;throw new Error("bad point: ZERO")}let{x:l,y:f}=p.toAffine();if(!t.isValid(l)||!t.isValid(f))throw new Error("bad point: x or y not FE");let d=t.sqr(f),w=o(l);if(!t.eql(d,w))throw new Error("bad point: equation left != right");if(!p.isTorsionFree())throw new Error("bad point: not in prime-order subgroup");return!0});class h{constructor(l,f,d){if(this.px=l,this.py=f,this.pz=d,l==null||!t.isValid(l))throw new Error("x required");if(f==null||!t.isValid(f))throw new Error("y required");if(d==null||!t.isValid(d))throw new Error("z required");Object.freeze(this)}static fromAffine(l){let{x:f,y:d}=l||{};if(!l||!t.isValid(f)||!t.isValid(d))throw new Error("invalid affine point");if(l instanceof h)throw new Error("projective point not allowed");let w=g=>t.eql(g,t.ZERO);return w(f)&&w(d)?h.ZERO:new h(f,d,t.ONE)}get x(){return this.toAffine().x}get y(){return this.toAffine().y}static normalizeZ(l){let f=t.invertBatch(l.map(d=>d.pz));return l.map((d,w)=>d.toAffine(f[w])).map(h.fromAffine)}static fromHex(l){let f=h.fromAffine(s(W("pointHex",l)));return f.assertValidity(),f}static msm(l,f){return pippenger(h,n,l,f)}_setWindowSize(l){O.setWindowSize(this,l)}assertValidity(){y(this)}hasEvenY(){let{y:l}=this.toAffine();if(t.isOdd)return!t.isOdd(l);throw new Error("Field doesn't support isOdd")}equals(l){i(l);let{px:f,py:d,pz:w}=this,{px:g,py:v,pz:E}=l,m=t.eql(t.mul(f,E),t.mul(g,w)),B=t.eql(t.mul(d,E),t.mul(v,w));return m&&B}negate(){return new h(this.px,t.neg(this.py),this.pz)}double(){let{a:l,b:f}=r,d=t.mul(f,ht),{px:w,py:g,pz:v}=this,E=t.ZERO,m=t.ZERO,B=t.ZERO,b=t.mul(w,w),N=t.mul(g,g),S=t.mul(v,v),x=t.mul(w,g);return x=t.add(x,x),B=t.mul(w,v),B=t.add(B,B),E=t.mul(l,B),m=t.mul(d,S),m=t.add(E,m),E=t.sub(N,m),m=t.add(N,m),m=t.mul(E,m),E=t.mul(x,E),B=t.mul(d,B),S=t.mul(l,S),x=t.sub(b,S),x=t.mul(l,x),x=t.add(x,B),B=t.add(b,b),b=t.add(B,b),b=t.add(b,S),b=t.mul(b,x),m=t.add(m,b),S=t.mul(g,v),S=t.add(S,S),b=t.mul(S,x),E=t.sub(E,b),B=t.mul(S,N),B=t.add(B,B),B=t.add(B,B),new h(E,m,B)}add(l){i(l);let{px:f,py:d,pz:w}=this,{px:g,py:v,pz:E}=l,m=t.ZERO,B=t.ZERO,b=t.ZERO,N=r.a,S=t.mul(r.b,ht),x=t.mul(f,g),F=t.mul(d,v),z=t.mul(w,E),D=t.add(f,d),I=t.add(g,v);D=t.mul(D,I),I=t.add(x,F),D=t.sub(D,I),I=t.add(f,w);let Z=t.add(g,E);return I=t.mul(I,Z),Z=t.add(x,z),I=t.sub(I,Z),Z=t.add(d,w),m=t.add(v,E),Z=t.mul(Z,m),m=t.add(F,z),Z=t.sub(Z,m),b=t.mul(N,I),m=t.mul(S,z),b=t.add(m,b),m=t.sub(F,b),b=t.add(F,b),B=t.mul(m,b),F=t.add(x,x),F=t.add(F,x),z=t.mul(N,z),I=t.mul(S,I),F=t.add(F,z),z=t.sub(x,z),z=t.mul(N,z),I=t.add(I,z),x=t.mul(F,I),B=t.add(B,x),x=t.mul(Z,I),m=t.mul(D,m),m=t.sub(m,x),x=t.mul(D,F),b=t.mul(Z,b),b=t.add(b,x),new h(m,B,b)}subtract(l){return this.add(l.negate())}is0(){return this.equals(h.ZERO)}wNAF(l){return O.wNAFCached(this,l,h.normalizeZ)}multiplyUnsafe(l){let{endo:f,n:d}=r;G("scalar",l,H,d);let w=h.ZERO;if(l===H)return w;if(this.is0()||l===L)return this;if(!f||O.hasPrecomputes(this))return O.wNAFCachedUnsafe(this,l,h.normalizeZ);let{k1neg:g,k1:v,k2neg:E,k2:m}=f.splitScalar(l),B=w,b=w,N=this;for(;v>H||m>H;)v&L&&(B=B.add(N)),m&L&&(b=b.add(N)),N=N.double(),v>>=L,m>>=L;return g&&(B=B.negate()),E&&(b=b.negate()),b=new h(t.mul(b.px,f.beta),b.py,b.pz),B.add(b)}multiply(l){let{endo:f,n:d}=r;G("scalar",l,L,d);let w,g;if(f){let{k1neg:v,k1:E,k2neg:m,k2:B}=f.splitScalar(l),{p:b,f:N}=this.wNAF(E),{p:S,f:x}=this.wNAF(B);b=O.constTimeNegate(v,b),S=O.constTimeNegate(m,S),S=new h(t.mul(S.px,f.beta),S.py,S.pz),w=b.add(S),g=N.add(x)}else{let{p:v,f:E}=this.wNAF(l);w=v,g=E}return h.normalizeZ([w,g])[0]}multiplyAndAddUnsafe(l,f,d){let w=h.BASE,g=(E,m)=>m===H||m===L||!E.equals(w)?E.multiplyUnsafe(m):E.multiply(m),v=g(this,f).add(g(l,d));return v.is0()?void 0:v}toAffine(l){return c(this,l)}isTorsionFree(){let{h:l,isTorsionFree:f}=r;if(l===L)return!0;if(f)return f(h,this);throw new Error("isTorsionFree() has not been declared for the elliptic curve")}}h.BASE=new h(r.Gx,r.Gy,t.ONE),h.ZERO=new h(t.ZERO,t.ONE,t.ZERO);let A=r.nBitLength,O=Kt(h,r.endo?Math.ceil(A/2):A);return{CURVE:r,ProjectivePoint:h,normPrivateKeyToScalar:a,weierstrassEquation:o,isWithinCurveOrder:u}}function Yt(e){let r=bt(e);return J(r,{hash:"hash",hmac:"function",randomBytes:"function"},{bits2int:"function",bits2int_modN:"function",lowS:"boolean"}),Object.freeze({lowS:!0,...r})}function Jt(e){let r=Yt(e),{Fp:t,n}=r,s=t.BYTES+1,o=2*t.BYTES+1;function u(l){return P(l,n)}function a(l){return it(l,n)}let{ProjectivePoint:i,weierstrassEquation:c}=Wt({...r,fromBytes(l){let f=l.length,d=l[0],w=l.subarray(1);if(f===s&&(d===2||d===3)){let g=j(w);if(!st(g,L,t.ORDER))throw new Error("Point is not on curve");let v=c(g),E;try{E=t.sqrt(v)}catch(B){let b=B instanceof Error?": "+B.message:"";throw new Error("Point is not on curve"+b)}let m=(E&L)===L;return(d&1)===1!==m&&(E=t.neg(E)),{x:g,y:E}}else if(f===o&&d===4){let g=t.fromBytes(w.subarray(0,t.BYTES)),v=t.fromBytes(w.subarray(t.BYTES,2*t.BYTES));return{x:g,y:v}}else{let g=s,v=o;throw new Error("invalid Point, expected length of "+g+", or uncompressed "+v+", got "+f)}}}),y=l=>ot(pt(l,r.nByteLength)),h=(l,f,d)=>j(l.slice(f,d));class A{constructor(f,d,w){this.r=f,this.s=d,this.recovery=w,this.assertValidity()}static fromCompact(f){let d=r.nByteLength;return f=W("compactSignature",f,d*2),new A(h(f,0,d),h(f,d,2*d))}assertValidity(){G("r",this.r,L,n),G("s",this.s,L,n)}addRecoveryBit(f){return new A(this.r,this.s,f)}recoverPublicKey(f){let{r:d,s:w,recovery:g}=this,v=p(W("msgHash",f));if(g==null||![0,1,2,3].includes(g))throw new Error("recovery id invalid");let E=g===2||g===3?d+r.n:d;if(E>=t.ORDER)throw new Error("recovery id 2 or 3 invalid");let m=g&1?"03":"02",B=i.fromHex(m+y(E)),b=a(E),N=u(-v*b),S=u(w*b),x=i.BASE.multiplyAndAddUnsafe(B,N,S);if(!x)throw new Error("point at infinify");return x.assertValidity(),x}hasHighS(){return isBiggerThanHalfOrder(this.s)}normalizeS(){return this.hasHighS()?new A(this.r,u(-this.s),this.recovery):this}toDERRawBytes(){return M(this.toDERHex())}toDERHex(){return DER.hexFromSig({r:this.r,s:this.s})}toCompactRawBytes(){return M(this.toCompactHex())}toCompactHex(){return y(this.r)+y(this.s)}}let O=r.bits2int||function(l){if(l.length>8192)throw new Error("input is too large");let f=j(l),d=l.length*8-r.nBitLength;return d>0?f>>BigInt(d):f},p=r.bits2int_modN||function(l){return u(O(l))};return i.BASE._setWindowSize(8),{CURVE:r,ProjectivePoint:i,Signature:A}}function Qt(e){return{hash:e,hmac:(r,...t)=>hmac(e,r,concatBytes(...t)),randomBytes:vt}}function Xt(e,r){let t=n=>Jt({...e,...Qt(n)});return{...t(r),create:t}}var $t=yt(BigInt("0xffffffff00000001000000000000000000000000ffffffffffffffffffffffff")),_t=115792089210356248762697446949407573530086143415290314195533631308867097853948n,te=0x5ac635d8aa3a93e7b3ebbd55769886bc651d06b0cc53b0f63bce3c3e27d2604bn,rt=Xt({a:_t,b:te,Fp:$t,n:0xffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632551n,Gx:0x6b17d1f2e12c4247f8bce6e563a440f277037d812deb33a0f4a13945d898c296n,Gy:0x4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5n,h:1n,lowS:!1},Rt);function re(e,{r,s:t},n){let s=rt.ProjectivePoint.fromHex(e),o=new rt.Signature(r,t,0).recoverPublicKey(n);if(s.px==o.x)return 0;let u=new rt.Signature(r,t,1).recoverPublicKey(n);if(s.px==u.x)return 1;throw new Error("Unable to calculate the recovery ID for signature.")}export{re as default};
+var P = e => new DataView(e.buffer, e.byteOffset, e.byteLength), V = (e, n) => e << 32 - n | e >>> n, vt = class {
+    clone() { return this._cloneInto(); }
+};
+function Et(e) { let n = r => e().update(toBytes(r)).digest(), t = e(); return n.outputLen = t.outputLen, n.blockLen = t.blockLen, n.create = () => e(), n; }
+function Bt(e = 32) { if (crypto && typeof crypto.getRandomValues == "function")
+    return crypto.getRandomValues(new Uint8Array(e)); if (crypto && typeof crypto.randomBytes == "function")
+    return crypto.randomBytes(e); throw new Error("crypto.getRandomValues must be defined"); }
+var xt = (e, n, t) => e & n ^ ~e & t, St = (e, n, t) => e & n ^ e & t ^ n & t, At = class extends vt {
+    constructor(e, n, t, r) { super(), this.blockLen = e, this.outputLen = n, this.padOffset = t, this.isLE = r, this.finished = !1, this.length = 0, this.pos = 0, this.destroyed = !1, this.buffer = new Uint8Array(e), this.view = P(this.buffer); }
+    update(e) { aexists(this); let { view: n, buffer: t, blockLen: r } = this; e = toBytes(e); let s = e.length; for (let o = 0; o < s;) {
+        let u = Math.min(r - this.pos, s - o);
+        if (u === r) {
+            let f = P(e);
+            for (; r <= s - o; o += r)
+                this.process(f, o);
+            continue;
+        }
+        t.set(e.subarray(o, o + u), this.pos), this.pos += u, o += u, this.pos === r && (this.process(n, 0), this.pos = 0);
+    } return this.length += e.length, this.roundClean(), this; }
+    digestInto(e) { aexists(this), aoutput(e, this), this.finished = !0; let { buffer: n, view: t, blockLen: r, isLE: s } = this, { pos: o } = this; n[o++] = 128, this.buffer.subarray(o).fill(0), this.padOffset > r - o && (this.process(t, 0), o = 0); for (let h = o; h < r; h++)
+        n[h] = 0; setBigUint64(t, r - 8, BigInt(this.length * 8), s), this.process(t, 0); let u = P(e), f = this.outputLen; if (f % 4)
+        throw new Error("_sha2: outputLen should be aligned to 32bit"); let i = f / 4, d = this.get(); if (i > d.length)
+        throw new Error("_sha2: outputLen bigger than state"); for (let h = 0; h < i; h++)
+        u.setUint32(4 * h, d[h], s); }
+    digest() { let { buffer: e, outputLen: n } = this; this.digestInto(e); let t = e.slice(0, n); return this.destroy(), t; }
+    _cloneInto(e) { e || (e = new this.constructor), e.set(...this.get()); let { blockLen: n, buffer: t, length: r, finished: s, destroyed: o, pos: u } = this; return e.length = r, e.pos = u, e.finished = s, e.destroyed = o, r % n && e.buffer.set(t), e; }
+}, Nt = new Uint32Array([1116352408, 1899447441, 3049323471, 3921009573, 961987163, 1508970993, 2453635748, 2870763221, 3624381080, 310598401, 607225278, 1426881987, 1925078388, 2162078206, 2614888103, 3248222580, 3835390401, 4022224774, 264347078, 604807628, 770255983, 1249150122, 1555081692, 1996064986, 2554220882, 2821834349, 2952996808, 3210313671, 3336571891, 3584528711, 113926993, 338241895, 666307205, 773529912, 1294757372, 1396182291, 1695183700, 1986661051, 2177026350, 2456956037, 2730485921, 2820302411, 3259730800, 3345764771, 3516065817, 3600352804, 4094571909, 275423344, 430227734, 506948616, 659060556, 883997877, 958139571, 1322822218, 1537002063, 1747873779, 1955562222, 2024104815, 2227730452, 2361852424, 2428436474, 2756734187, 3204031479, 3329325298]), k = new Uint32Array([1779033703, 3144134277, 1013904242, 2773480762, 1359893119, 2600822924, 528734635, 1541459225]), H = new Uint32Array(64), Ot = class extends At {
+    constructor() { super(64, 32, 8, !1), this.A = k[0] | 0, this.B = k[1] | 0, this.C = k[2] | 0, this.D = k[3] | 0, this.E = k[4] | 0, this.F = k[5] | 0, this.G = k[6] | 0, this.H = k[7] | 0; }
+    get() { let { A: e, B: n, C: t, D: r, E: s, F: o, G: u, H: f } = this; return [e, n, t, r, s, o, u, f]; }
+    set(e, n, t, r, s, o, u, f) { this.A = e | 0, this.B = n | 0, this.C = t | 0, this.D = r | 0, this.E = s | 0, this.F = o | 0, this.G = u | 0, this.H = f | 0; }
+    process(e, n) { for (let h = 0; h < 16; h++, n += 4)
+        H[h] = e.getUint32(n, !1); for (let h = 16; h < 64; h++) {
+        let g = H[h - 15], x = H[h - 2], A = V(g, 7) ^ V(g, 18) ^ g >>> 3, w = V(x, 17) ^ V(x, 19) ^ x >>> 10;
+        H[h] = w + H[h - 7] + A + H[h - 16] | 0;
+    } let { A: t, B: r, C: s, D: o, E: u, F: f, G: i, H: d } = this; for (let h = 0; h < 64; h++) {
+        let g = V(u, 6) ^ V(u, 11) ^ V(u, 25), x = d + g + xt(u, f, i) + Nt[h] + H[h] | 0, w = (V(t, 2) ^ V(t, 13) ^ V(t, 22)) + St(t, r, s) | 0;
+        d = i, i = f, f = u, u = o + x | 0, o = s, s = r, r = t, t = x + w | 0;
+    } t = t + this.A | 0, r = r + this.B | 0, s = s + this.C | 0, o = o + this.D | 0, u = u + this.E | 0, f = f + this.F | 0, i = i + this.G | 0, d = d + this.H | 0, this.set(t, r, s, o, u, f, i, d); }
+    roundClean() { H.fill(0); }
+    destroy() { this.set(0, 0, 0, 0, 0, 0, 0, 0), this.buffer.fill(0); }
+}, qt = Et(() => new Ot), ht = 0n, It = 1n, Lt = 2n;
+function W(e) { return e instanceof Uint8Array || ArrayBuffer.isView(e) && e.constructor.name === "Uint8Array"; }
+function Zt(e) { if (!W(e))
+    throw new Error("Uint8Array expected"); }
+var zt = Array.from({ length: 256 }, (e, n) => n.toString(16).padStart(2, "0"));
+function ot(e) { Zt(e); let n = ""; for (let t = 0; t < e.length; t++)
+    n += zt[e[t]]; return n; }
+function Tt(e) { if (typeof e != "string")
+    throw new Error("hex string expected, got " + typeof e); return e === "" ? ht : BigInt("0x" + e); }
+var R = { _0: 48, _9: 57, A: 65, F: 70, a: 97, f: 102 };
+function at(e) { if (e >= R._0 && e <= R._9)
+    return e - R._0; if (e >= R.A && e <= R.F)
+    return e - (R.A - 10); if (e >= R.a && e <= R.f)
+    return e - (R.a - 10); }
+function K(e) { if (typeof e != "string")
+    throw new Error("hex string expected, got " + typeof e); let n = e.length, t = n / 2; if (n % 2)
+    throw new Error("hex string expected, got unpadded hex of length " + n); let r = new Uint8Array(t); for (let s = 0, o = 0; s < t; s++, o += 2) {
+    let u = at(e.charCodeAt(o)), f = at(e.charCodeAt(o + 1));
+    if (u === void 0 || f === void 0) {
+        let i = e[o] + e[o + 1];
+        throw new Error('hex string expected, got non-hex character "' + i + '" at index ' + o);
+    }
+    r[s] = u * 16 + f;
+} return r; }
+function j(e) { return Tt(ot(e)); }
+function wt(e, n) { return K(e.toString(16).padStart(n * 2, "0")); }
+function D(e, n, t) { let r; if (typeof n == "string")
+    try {
+        r = K(n);
+    }
+    catch (o) {
+        throw new Error(e + " must be hex string or Uint8Array, cause: " + o);
+    }
+else if (W(n))
+    r = Uint8Array.from(n);
+else
+    throw new Error(e + " must be hex string or Uint8Array"); let s = r.length; if (typeof t == "number" && s !== t)
+    throw new Error(e + " of length " + t + " expected, got " + s); return r; }
+var Q = e => typeof e == "bigint" && ht <= e;
+function st(e, n, t) { return Q(e) && Q(n) && Q(t) && n <= e && e < t; }
+function F(e, n, t, r) { if (!st(n, t, r))
+    throw new Error("expected valid " + e + ": " + t + " <= n < " + r + ", got " + n); }
+var Ct = e => (Lt << BigInt(e - 1)) - It, Ut = { bigint: e => typeof e == "bigint", function: e => typeof e == "function", boolean: e => typeof e == "boolean", string: e => typeof e == "string", stringOrUint8Array: e => typeof e == "string" || W(e), isSafeInteger: e => Number.isSafeInteger(e), array: e => Array.isArray(e), field: (e, n) => n.Fp.isValid(e), hash: e => typeof e == "function" && Number.isSafeInteger(e.outputLen) };
+function X(e, n, t = {}) { let r = (s, o, u) => { let f = Ut[o]; if (typeof f != "function")
+    throw new Error("invalid validator function"); let i = e[s]; if (!(u && i === void 0) && !f(i, e))
+    throw new Error("param " + String(s) + " is invalid. Expected " + o + ", got " + i); }; for (let [s, o] of Object.entries(n))
+    r(s, o, !1); for (let [s, o] of Object.entries(t))
+    r(s, o, !0); return e; }
+function ft(e) { let n = new WeakMap; return (t, ...r) => { let s = n.get(t); if (s !== void 0)
+    return s; let o = e(t, ...r); return n.set(t, o), o; }; }
+var I = BigInt(0), O = BigInt(1), _ = BigInt(2), Vt = BigInt(3), rt = BigInt(4), ct = BigInt(5), ut = BigInt(8), Rt = BigInt(9), kt = BigInt(16);
+function C(e, n) { let t = e % n; return t >= I ? t : n + t; }
+function Ht(e, n, t) { if (n < I)
+    throw new Error("invalid exponent, negatives unsupported"); if (t <= I)
+    throw new Error("invalid modulus"); if (t === O)
+    return I; let r = O; for (; n > I;)
+    n & O && (r = r * e % t), e = e * e % t, n >>= O; return r; }
+function it(e, n) { if (e === I)
+    throw new Error("invert: expected non-zero number"); if (n <= I)
+    throw new Error("invert: expected positive modulus, got " + n); let t = C(e, n), r = n, s = I, o = O, u = O, f = I; for (; t !== I;) {
+    let d = r / t, h = r % t, g = s - u * d, x = o - f * d;
+    r = t, t = h, s = u, o = f, u = g, f = x;
+} if (r !== O)
+    throw new Error("invert: does not exist"); return C(s, n); }
+function _t(e) { let n = (e - O) / _, t, r, s; for (t = e - O, r = 0; t % _ === I; t /= _, r++)
+    ; for (s = _; s < e && Ht(s, n, e) !== e - O; s++)
+    if (s > 1e3)
+        throw new Error("Cannot find square root: likely non-prime P"); if (r === 1) {
+    let u = (e + O) / rt;
+    return function (i, d) { let h = i.pow(d, u); if (!i.eql(i.sqr(h), d))
+        throw new Error("Cannot find square root"); return h; };
+} let o = (t + O) / _; return function (f, i) { if (f.pow(i, n) === f.neg(f.ONE))
+    throw new Error("Cannot find square root"); let d = r, h = f.pow(f.mul(f.ONE, s), t), g = f.pow(i, o), x = f.pow(i, t); for (; !f.eql(x, f.ONE);) {
+    if (f.eql(x, f.ZERO))
+        return f.ZERO;
+    let A = 1;
+    for (let a = f.sqr(x); A < d && !f.eql(a, f.ONE); A++)
+        a = f.sqr(a);
+    let w = f.pow(h, O << BigInt(d - A - 1));
+    h = f.sqr(w), g = f.mul(g, w), x = f.mul(x, h), d = A;
+} return g; }; }
+function Mt(e) { if (e % rt === Vt) {
+    let n = (e + O) / rt;
+    return function (r, s) { let o = r.pow(s, n); if (!r.eql(r.sqr(o), s))
+        throw new Error("Cannot find square root"); return o; };
+} if (e % ut === ct) {
+    let n = (e - ct) / ut;
+    return function (r, s) { let o = r.mul(s, _), u = r.pow(o, n), f = r.mul(s, u), i = r.mul(r.mul(f, _), u), d = r.mul(f, r.sub(i, r.ONE)); if (!r.eql(r.sqr(d), s))
+        throw new Error("Cannot find square root"); return d; };
+} return e % kt, _t(e); }
+var Yt = ["create", "isValid", "is0", "neg", "inv", "sqrt", "sqr", "eql", "add", "sub", "mul", "pow", "div", "addN", "subN", "mulN", "sqrN"];
+function jt(e) { let n = { ORDER: "bigint", MASK: "bigint", BYTES: "isSafeInteger", BITS: "isSafeInteger" }, t = Yt.reduce((r, s) => (r[s] = "function", r), n); return X(e, t); }
+function Ft(e, n, t) { if (t < I)
+    throw new Error("invalid exponent, negatives unsupported"); if (t === I)
+    return e.ONE; if (t === O)
+    return n; let r = e.ONE, s = n; for (; t > I;)
+    t & O && (r = e.mul(r, s)), s = e.sqr(s), t >>= O; return r; }
+function Gt(e, n) { let t = new Array(n.length), r = n.reduce((o, u, f) => e.is0(u) ? o : (t[f] = o, e.mul(o, u)), e.ONE), s = e.inv(r); return n.reduceRight((o, u, f) => e.is0(u) ? o : (t[f] = e.mul(o, t[f]), e.mul(o, u)), s), t; }
+function gt(e, n) { let t = n !== void 0 ? n : e.toString(2).length, r = Math.ceil(t / 8); return { nBitLength: t, nByteLength: r }; }
+function pt(e, n, t = !1, r = {}) { if (e <= I)
+    throw new Error("invalid field: expected ORDER > 0, got " + e); let { nBitLength: s, nByteLength: o } = gt(e, n); if (o > 2048)
+    throw new Error("invalid field: expected ORDER of <= 2048 bytes"); let u, f = Object.freeze({ ORDER: e, isLE: t, BITS: s, BYTES: o, MASK: Ct(s), ZERO: I, ONE: O, create: i => C(i, e), isValid: i => { if (typeof i != "bigint")
+        throw new Error("invalid field element: expected bigint, got " + typeof i); return I <= i && i < e; }, is0: i => i === I, isOdd: i => (i & O) === O, neg: i => C(-i, e), eql: (i, d) => i === d, sqr: i => C(i * i, e), add: (i, d) => C(i + d, e), sub: (i, d) => C(i - d, e), mul: (i, d) => C(i * d, e), pow: (i, d) => Ft(f, i, d), div: (i, d) => C(i * it(d, e), e), sqrN: i => i * i, addN: (i, d) => i + d, subN: (i, d) => i - d, mulN: (i, d) => i * d, inv: i => it(i, e), sqrt: r.sqrt || (i => (u || (u = Mt(e)), u(f, i))), invertBatch: i => Gt(f, i), cmov: (i, d, h) => h ? d : i, toBytes: i => t ? numberToBytesLE(i, o) : wt(i, o), fromBytes: i => { if (i.length !== o)
+        throw new Error("Field.fromBytes: expected " + o + " bytes, got " + i.length); return t ? bytesToNumberLE(i) : j(i); } }); return Object.freeze(f); }
+var lt = BigInt(0), G = BigInt(1);
+function J(e, n) { let t = n.negate(); return e ? t : n; }
+function mt(e, n) { if (!Number.isSafeInteger(e) || e <= 0 || e > n)
+    throw new Error("invalid window size, expected [1.." + n + "], got W=" + e); }
+function $(e, n) { mt(e, n); let t = Math.ceil(n / e) + 1, r = 2 ** (e - 1); return { windows: t, windowSize: r }; }
+var tt = new WeakMap, yt = new WeakMap;
+function et(e) { return yt.get(e) || 1; }
+function Kt(e, n) { return { constTimeNegate: J, hasPrecomputes(t) { return et(t) !== 1; }, unsafeLadder(t, r, s = e.ZERO) { let o = t; for (; r > lt;)
+        r & G && (s = s.add(o)), o = o.double(), r >>= G; return s; }, precomputeWindow(t, r) { let { windows: s, windowSize: o } = $(r, n), u = [], f = t, i = f; for (let d = 0; d < s; d++) {
+        i = f, u.push(i);
+        for (let h = 1; h < o; h++)
+            i = i.add(f), u.push(i);
+        f = i.double();
+    } return u; }, wNAF(t, r, s) { let { windows: o, windowSize: u } = $(t, n), f = e.ZERO, i = e.BASE, d = BigInt(2 ** t - 1), h = 2 ** t, g = BigInt(t); for (let x = 0; x < o; x++) {
+        let A = x * u, w = Number(s & d);
+        s >>= g, w > u && (w -= h, s += G);
+        let a = A, c = A + Math.abs(w) - 1, l = x % 2 !== 0, p = w < 0;
+        w === 0 ? i = i.add(J(l, r[a])) : f = f.add(J(p, r[c]));
+    } return { p: f, f: i }; }, wNAFUnsafe(t, r, s, o = e.ZERO) { let { windows: u, windowSize: f } = $(t, n), i = BigInt(2 ** t - 1), d = 2 ** t, h = BigInt(t); for (let g = 0; g < u; g++) {
+        let x = g * f;
+        if (s === lt)
+            break;
+        let A = Number(s & i);
+        if (s >>= h, A > f && (A -= d, s += G), A === 0)
+            continue;
+        let w = r[x + Math.abs(A) - 1];
+        A < 0 && (w = w.negate()), o = o.add(w);
+    } return o; }, getPrecomputes(t, r, s) { let o = tt.get(r); return o || (o = this.precomputeWindow(r, t), t !== 1 && tt.set(r, s(o))), o; }, wNAFCached(t, r, s) { let o = et(t); return this.wNAF(o, this.getPrecomputes(o, t, s), r); }, wNAFCachedUnsafe(t, r, s, o) { let u = et(t); return u === 1 ? this.unsafeLadder(t, r, o) : this.wNAFUnsafe(u, this.getPrecomputes(u, t, s), r, o); }, setWindowSize(t, r) { mt(r, n), yt.set(t, r), tt.delete(t); } }; }
+function bt(e) { return jt(e.Fp), X(e, { n: "bigint", h: "bigint", Gx: "field", Gy: "field" }, { nBitLength: "isSafeInteger", nByteLength: "isSafeInteger" }), Object.freeze({ ...gt(e.n, e.nBitLength), ...e, p: e.Fp.ORDER }); }
+function Dt(e) { let n = bt(e); X(n, { a: "field", b: "field" }, { allowedPrivateKeyLengths: "array", wrapPrivateKey: "boolean", isTorsionFree: "function", clearCofactor: "function", allowInfinityPoint: "boolean", fromBytes: "function", toBytes: "function" }); let { endo: t, Fp: r, a: s } = n; if (t) {
+    if (!r.eql(s, r.ZERO))
+        throw new Error("invalid endomorphism, can only be defined for Koblitz curves that have a=0");
+    if (typeof t != "object" || typeof t.beta != "bigint" || typeof t.splitScalar != "function")
+        throw new Error("invalid endomorphism, expected beta: bigint and splitScalar: function");
+} return Object.freeze({ ...n }); }
+var Y = BigInt(0), Z = BigInt(1), dt = BigInt(3);
+function Wt(e) { let n = Dt(e), { Fp: t } = n, r = pt(n.n, n.nBitLength), s = n.fromBytes || (w => { let a = w.subarray(1), c = t.fromBytes(a.subarray(0, t.BYTES)), l = t.fromBytes(a.subarray(t.BYTES, 2 * t.BYTES)); return { x: c, y: l }; }); function o(w) { let { a, b: c } = n, l = t.sqr(w), p = t.mul(l, w); return t.add(t.add(p, t.mul(w, a)), c); } if (!t.eql(t.sqr(n.Gy), o(n.Gx)))
+    throw new Error("bad generator point: equation left != right"); function u(w) { return st(w, Z, n.n); } function f(w) { let { allowedPrivateKeyLengths: a, nByteLength: c, wrapPrivateKey: l, n: p } = n; if (a && typeof w != "bigint") {
+    if (W(w) && (w = ot(w)), typeof w != "string" || !a.includes(w.length))
+        throw new Error("invalid private key");
+    w = w.padStart(c * 2, "0");
+} let y; try {
+    y = typeof w == "bigint" ? w : j(D("private key", w, c));
+}
+catch {
+    throw new Error("invalid private key, expected hex or " + c + " bytes, got " + typeof w);
+} return l && (y = C(y, p)), F("private key", y, Z, p), y; } function i(w) { if (!(w instanceof g))
+    throw new Error("ProjectivePoint expected"); } let d = ft((w, a) => { let { px: c, py: l, pz: p } = w; if (t.eql(p, t.ONE))
+    return { x: c, y: l }; let y = w.is0(); a == null && (a = y ? t.ONE : t.inv(p)); let B = t.mul(c, a), v = t.mul(l, a), b = t.mul(p, a); if (y)
+    return { x: t.ZERO, y: t.ZERO }; if (!t.eql(b, t.ONE))
+    throw new Error("invZ was invalid"); return { x: B, y: v }; }), h = ft(w => { if (w.is0()) {
+    if (n.allowInfinityPoint && !t.is0(w.py))
+        return;
+    throw new Error("bad point: ZERO");
+} let { x: a, y: c } = w.toAffine(); if (!t.isValid(a) || !t.isValid(c))
+    throw new Error("bad point: x or y not FE"); let l = t.sqr(c), p = o(a); if (!t.eql(l, p))
+    throw new Error("bad point: equation left != right"); if (!w.isTorsionFree())
+    throw new Error("bad point: not in prime-order subgroup"); return !0; }); class g {
+    constructor(a, c, l) { if (this.px = a, this.py = c, this.pz = l, a == null || !t.isValid(a))
+        throw new Error("x required"); if (c == null || !t.isValid(c))
+        throw new Error("y required"); if (l == null || !t.isValid(l))
+        throw new Error("z required"); Object.freeze(this); }
+    static fromAffine(a) { let { x: c, y: l } = a || {}; if (!a || !t.isValid(c) || !t.isValid(l))
+        throw new Error("invalid affine point"); if (a instanceof g)
+        throw new Error("projective point not allowed"); let p = y => t.eql(y, t.ZERO); return p(c) && p(l) ? g.ZERO : new g(c, l, t.ONE); }
+    get x() { return this.toAffine().x; }
+    get y() { return this.toAffine().y; }
+    static normalizeZ(a) { let c = t.invertBatch(a.map(l => l.pz)); return a.map((l, p) => l.toAffine(c[p])).map(g.fromAffine); }
+    static fromHex(a) { let c = g.fromAffine(s(D("pointHex", a))); return c.assertValidity(), c; }
+    static msm(a, c) { return pippenger(g, r, a, c); }
+    _setWindowSize(a) { A.setWindowSize(this, a); }
+    assertValidity() { h(this); }
+    hasEvenY() { let { y: a } = this.toAffine(); if (t.isOdd)
+        return !t.isOdd(a); throw new Error("Field doesn't support isOdd"); }
+    equals(a) { i(a); let { px: c, py: l, pz: p } = this, { px: y, py: B, pz: v } = a, b = t.eql(t.mul(c, v), t.mul(y, p)), E = t.eql(t.mul(l, v), t.mul(B, p)); return b && E; }
+    negate() { return new g(this.px, t.neg(this.py), this.pz); }
+    double() { let { a, b: c } = n, l = t.mul(c, dt), { px: p, py: y, pz: B } = this, v = t.ZERO, b = t.ZERO, E = t.ZERO, m = t.mul(p, p), q = t.mul(y, y), N = t.mul(B, B), S = t.mul(p, y); return S = t.add(S, S), E = t.mul(p, B), E = t.add(E, E), v = t.mul(a, E), b = t.mul(l, N), b = t.add(v, b), v = t.sub(q, b), b = t.add(q, b), b = t.mul(v, b), v = t.mul(S, v), E = t.mul(l, E), N = t.mul(a, N), S = t.sub(m, N), S = t.mul(a, S), S = t.add(S, E), E = t.add(m, m), m = t.add(E, m), m = t.add(m, N), m = t.mul(m, S), b = t.add(b, m), N = t.mul(y, B), N = t.add(N, N), m = t.mul(N, S), v = t.sub(v, m), E = t.mul(N, q), E = t.add(E, E), E = t.add(E, E), new g(v, b, E); }
+    add(a) { i(a); let { px: c, py: l, pz: p } = this, { px: y, py: B, pz: v } = a, b = t.ZERO, E = t.ZERO, m = t.ZERO, q = n.a, N = t.mul(n.b, dt), S = t.mul(c, y), z = t.mul(l, B), T = t.mul(p, v), M = t.add(c, l), L = t.add(y, B); M = t.mul(M, L), L = t.add(S, z), M = t.sub(M, L), L = t.add(c, p); let U = t.add(y, v); return L = t.mul(L, U), U = t.add(S, T), L = t.sub(L, U), U = t.add(l, p), b = t.add(B, v), U = t.mul(U, b), b = t.add(z, T), U = t.sub(U, b), m = t.mul(q, L), b = t.mul(N, T), m = t.add(b, m), b = t.sub(z, m), m = t.add(z, m), E = t.mul(b, m), z = t.add(S, S), z = t.add(z, S), T = t.mul(q, T), L = t.mul(N, L), z = t.add(z, T), T = t.sub(S, T), T = t.mul(q, T), L = t.add(L, T), S = t.mul(z, L), E = t.add(E, S), S = t.mul(U, L), b = t.mul(M, b), b = t.sub(b, S), S = t.mul(M, z), m = t.mul(U, m), m = t.add(m, S), new g(b, E, m); }
+    subtract(a) { return this.add(a.negate()); }
+    is0() { return this.equals(g.ZERO); }
+    wNAF(a) { return A.wNAFCached(this, a, g.normalizeZ); }
+    multiplyUnsafe(a) { let { endo: c, n: l } = n; F("scalar", a, Y, l); let p = g.ZERO; if (a === Y)
+        return p; if (this.is0() || a === Z)
+        return this; if (!c || A.hasPrecomputes(this))
+        return A.wNAFCachedUnsafe(this, a, g.normalizeZ); let { k1neg: y, k1: B, k2neg: v, k2: b } = c.splitScalar(a), E = p, m = p, q = this; for (; B > Y || b > Y;)
+        B & Z && (E = E.add(q)), b & Z && (m = m.add(q)), q = q.double(), B >>= Z, b >>= Z; return y && (E = E.negate()), v && (m = m.negate()), m = new g(t.mul(m.px, c.beta), m.py, m.pz), E.add(m); }
+    multiply(a) { let { endo: c, n: l } = n; F("scalar", a, Z, l); let p, y; if (c) {
+        let { k1neg: B, k1: v, k2neg: b, k2: E } = c.splitScalar(a), { p: m, f: q } = this.wNAF(v), { p: N, f: S } = this.wNAF(E);
+        m = A.constTimeNegate(B, m), N = A.constTimeNegate(b, N), N = new g(t.mul(N.px, c.beta), N.py, N.pz), p = m.add(N), y = q.add(S);
+    }
+    else {
+        let { p: B, f: v } = this.wNAF(a);
+        p = B, y = v;
+    } return g.normalizeZ([p, y])[0]; }
+    multiplyAndAddUnsafe(a, c, l) { let p = g.BASE, y = (v, b) => b === Y || b === Z || !v.equals(p) ? v.multiplyUnsafe(b) : v.multiply(b), B = y(this, c).add(y(a, l)); return B.is0() ? void 0 : B; }
+    toAffine(a) { return d(this, a); }
+    isTorsionFree() { let { h: a, isTorsionFree: c } = n; if (a === Z)
+        return !0; if (c)
+        return c(g, this); throw new Error("isTorsionFree() has not been declared for the elliptic curve"); }
+} g.BASE = new g(n.Gx, n.Gy, t.ONE), g.ZERO = new g(t.ZERO, t.ONE, t.ZERO); let x = n.nBitLength, A = Kt(g, n.endo ? Math.ceil(x / 2) : x); return { CURVE: n, ProjectivePoint: g, normPrivateKeyToScalar: f, weierstrassEquation: o, isWithinCurveOrder: u }; }
+function Xt(e) { let n = bt(e); return X(n, { hash: "hash", hmac: "function", randomBytes: "function" }, { bits2int: "function", bits2int_modN: "function", lowS: "boolean" }), Object.freeze({ lowS: !0, ...n }); }
+function Pt(e) { let n = Xt(e), { Fp: t, n: r } = n, s = t.BYTES + 1, o = 2 * t.BYTES + 1; function u(a) { return C(a, r); } function f(a) { return it(a, r); } let { ProjectivePoint: i, weierstrassEquation: d } = Wt({ ...n, fromBytes(a) { let c = a.length, l = a[0], p = a.subarray(1); if (c === s && (l === 2 || l === 3)) {
+        let y = j(p);
+        if (!st(y, Z, t.ORDER))
+            throw new Error("Point is not on curve");
+        let B = d(y), v;
+        try {
+            v = t.sqrt(B);
+        }
+        catch (m) {
+            let q = m instanceof Error ? ": " + m.message : "";
+            throw new Error("Point is not on curve" + q);
+        }
+        let b = (v & Z) === Z;
+        return (l & 1) === 1 !== b && (v = t.neg(v)), { x: y, y: v };
+    }
+    else if (c === o && l === 4) {
+        let y = t.fromBytes(p.subarray(0, t.BYTES)), B = t.fromBytes(p.subarray(t.BYTES, 2 * t.BYTES));
+        return { x: y, y: B };
+    }
+    else {
+        let y = s, B = o;
+        throw new Error("invalid Point, expected length of " + y + ", or uncompressed " + B + ", got " + c);
+    } } }), h = a => ot(wt(a, n.nByteLength)), g = (a, c, l) => j(a.slice(c, l)); class x {
+    constructor(c, l, p) { this.r = c, this.s = l, this.recovery = p, this.assertValidity(); }
+    static fromCompact(c) { let l = n.nByteLength; return c = D("compactSignature", c, l * 2), new x(g(c, 0, l), g(c, l, 2 * l)); }
+    assertValidity() { F("r", this.r, Z, r), F("s", this.s, Z, r); }
+    addRecoveryBit(c) { return new x(this.r, this.s, c); }
+    recoverPublicKey(c) { let { r: l, s: p, recovery: y } = this, B = w(D("msgHash", c)); if (y == null || ![0, 1, 2, 3].includes(y))
+        throw new Error("recovery id invalid"); let v = y === 2 || y === 3 ? l + n.n : l; if (v >= t.ORDER)
+        throw new Error("recovery id 2 or 3 invalid"); let b = y & 1 ? "03" : "02", E = i.fromHex(b + h(v)), m = f(v), q = u(-B * m), N = u(p * m), S = i.BASE.multiplyAndAddUnsafe(E, q, N); if (!S)
+        throw new Error("point at infinify"); return S.assertValidity(), S; }
+    hasHighS() { return isBiggerThanHalfOrder(this.s); }
+    normalizeS() { return this.hasHighS() ? new x(this.r, u(-this.s), this.recovery) : this; }
+    toDERRawBytes() { return K(this.toDERHex()); }
+    toDERHex() { return DER.hexFromSig({ r: this.r, s: this.s }); }
+    toCompactRawBytes() { return K(this.toCompactHex()); }
+    toCompactHex() { return h(this.r) + h(this.s); }
+} let A = n.bits2int || function (a) { if (a.length > 8192)
+    throw new Error("input is too large"); let c = j(a), l = a.length * 8 - n.nBitLength; return l > 0 ? c >> BigInt(l) : c; }, w = n.bits2int_modN || function (a) { return u(A(a)); }; return i.BASE._setWindowSize(8), { CURVE: n, ProjectivePoint: i, Signature: x }; }
+function Qt(e) { return { hash: e, hmac: (n, ...t) => hmac(e, n, concatBytes(...t)), randomBytes: Bt }; }
+function Jt(e, n) { let t = r => Pt({ ...e, ...Qt(r) }); return { ...t(n), create: t }; }
+var $t = pt(BigInt("0xffffffff00000001000000000000000000000000ffffffffffffffffffffffff")), te = 115792089210356248762697446949407573530086143415290314195533631308867097853948n, ee = 0x5ac635d8aa3a93e7b3ebbd55769886bc651d06b0cc53b0f63bce3c3e27d2604bn, nt = Jt({ a: te, b: ee, Fp: $t, n: 0xffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632551n, Gx: 0x6b17d1f2e12c4247f8bce6e563a440f277037d812deb33a0f4a13945d898c296n, Gy: 0x4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5n, h: 1n, lowS: !1 }, qt);
+function ne(e, { r: n, s: t }, r) { let s = nt.ProjectivePoint.fromHex(e), u = new nt.Signature(n, t, 0).recoverPublicKey(r); if (s.px == u.x)
+    return 0; let i = new nt.Signature(n, t, 1).recoverPublicKey(r); if (s.px == i.x)
+    return 1; throw new Error("Unable to calculate the recovery ID for signature."); }
+export { ne as default };

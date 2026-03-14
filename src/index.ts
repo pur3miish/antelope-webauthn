@@ -1,5 +1,6 @@
-export { default as classifyWebAuthnCredential } from "./_utils/classify-web-auth-cred.js";
-export { default as createWebAuthnKey } from "./create_wa_public_key.js";
-export { default as createWebAuthnSignature } from "./create_wa_signature.js";
-export { default as createAuthenticatorAssertionResponse } from "./create-authenticator-assertion-response.js";
-export { default as verifyWebAuthnSignature } from "./verify_wa_signature.js";
+export { default as antelopeSign } from "./antelope-sign.js";
+export { default as authenticatorAssertion } from "./authenticator-assertion.js";
+export { default as authenticatorAttestation } from "./authenticator-attestation.js";
+export { default as createAntelopePublicKey } from "./create-antelope-publickey.js";
+export { default as createAntelopeSignature } from "./create-antelope-signature.js";
+export { default as verifyWebAuthnSignature } from "./verify-antelope-signature.js";

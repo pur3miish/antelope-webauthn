@@ -1,13 +1,18 @@
 import binary_to_base58 from "base58-js/binary_to_base58.js";
 import ripemd160 from "ripemd160-js/ripemd160.js";
 
-import decodeCBOR from "./cbor-decode.js";
-import sha256 from "./sha256.js";
+import decodeCBOR from "./_utils/cbor-decode.js";
 
+/**
+ * Creates an Antelope compatible public key from a webauthn attestation response.
+ * The public key can then be used to verify signatures on chain.
+ * @param attestationResponse - The response from the authenticator after creating a new credential.
+ * @returns An Antelope compatible public key string.
+ */
 export default async function createAntelopeWebAuthnPublicKey({
   attestationObject,
   clientDataJSON,
-}: AuthenticatorAttestationResponse) {
+}: AuthenticatorAttestationResponse): Promise<string> {
   const { authData } = decodeCBOR(attestationObject);
 
   const clientData = JSON.parse(
@@ -23,7 +28,9 @@ export default async function createAntelopeWebAuthnPublicKey({
   const ripid_chars: number[] = [];
   for (let i = 0; i < rpid.length; i++) ripid_chars.push(rpid[i].charCodeAt(0));
 
-  const check_hash = await sha256(Uint8Array.from(ripid_chars));
+  const check_hash = new Uint8Array(
+    await crypto.subtle.digest("SHA-256", Uint8Array.from(ripid_chars))
+  );
 
   new Uint8Array(check_hash).forEach((i, x) => {
     if (i != rpid_hash[x]) throw new Error("Invalid rpid hash");
@@ -33,9 +40,7 @@ export default async function createAntelopeWebAuthnPublicKey({
   const credIDLen = (CredIDLenBuffer[0] << 8) | CredIDLenBuffer[1]; // readUInt16BE
   const COSEPublicKey = authData.slice(55 + credIDLen, authData.length);
   const public_key = decodeCBOR(new Uint8Array(COSEPublicKey).buffer);
-
   const x = public_key[-2];
-
   const prefix = public_key[-3].slice(-1) & 1 ? 3 : 2;
 
   const webauthn_public_key = [

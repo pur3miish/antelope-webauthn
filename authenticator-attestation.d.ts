@@ -7,4 +7,9 @@ export type CreateWebAuthnKeyResult = {
     clientExtensionResults: AuthenticationExtensionsClientOutputs;
     antelope_public_key: string;
 };
-export default function createWebAuthnKey(options: CredentialCreationOptions): Promise<CreateWebAuthnKeyResult>;
+/**
+ * creates a new webauthn credential and returns an Antelope compatible public key along with the attestation response and other relevant information.
+ * @param options
+ * @returns
+ */
+export default function authenticatorAttestation(options: CredentialCreationOptions): Promise<CreateWebAuthnKeyResult>;

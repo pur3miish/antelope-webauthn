@@ -1,5 +1,5 @@
 import assertBrowserCompatibility from "./_utils/browser-compatability.js";
-import antelopeWebAuthnPublicKey from "./_utils/webauthn-public-key.js";
+import antelopeWebAuthnPublicKey from "./create-antelope-publickey.js";
 
 export type CreateWebAuthnKeyResult = {
   id: string;
@@ -11,7 +11,12 @@ export type CreateWebAuthnKeyResult = {
   antelope_public_key: string;
 };
 
-export default async function createWebAuthnKey(
+/**
+ * creates a new webauthn credential and returns an Antelope compatible public key along with the attestation response and other relevant information.
+ * @param options
+ * @returns
+ */
+export default async function authenticatorAttestation(
   options: CredentialCreationOptions
 ): Promise<CreateWebAuthnKeyResult> {
   assertBrowserCompatibility();

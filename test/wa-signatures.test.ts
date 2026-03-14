@@ -1,8 +1,8 @@
 import { deepStrictEqual } from "assert";
 import { webcrypto } from "crypto";
 
-import webauthn_signature_build from "../_utils/webauthn_signature.js";
-import webauthn_signature from "../src/_utils/webauthn_signature.js";
+import webauthn_signature_build from "../create-antelope-signature.js";
+import createAntelopeSignature from "../src/create-antelope-signature.js";
 
 const public_key =
   "PUB_WA_6eRs44BYTJKPrGTCqR5TuMSQbCrZsNdNSXTHNuNitSdTfVQe8JSf89qy7JwxEnFW7";
@@ -374,7 +374,7 @@ it("WA signature with v=1", async () => {
     "243": 125,
   });
 
-  const wa_sig = await webauthn_signature(
+  const wa_sig = await createAntelopeSignature(
     {
       authenticatorData,
       clientDataJSON,
@@ -764,7 +764,7 @@ it("WA signature with v=0", async () => {
     "243": 125,
   });
 
-  const wa_sig = await webauthn_signature(
+  const wa_sig = await createAntelopeSignature(
     {
       authenticatorData,
       clientDataJSON,
@@ -1031,7 +1031,7 @@ it("WA signature 3", async () => {
     "69": 187,
   });
 
-  const wa_sig = await webauthn_signature(
+  const wa_sig = await createAntelopeSignature(
     {
       authenticatorData,
       clientDataJSON,
@@ -1303,7 +1303,7 @@ it("WA signature 4", async () => {
     "71": 75,
   });
 
-  const wa_sig = await webauthn_signature(
+  const wa_sig = await createAntelopeSignature(
     {
       authenticatorData,
       clientDataJSON,
@@ -1573,7 +1573,7 @@ it("WA signature 5", async () => {
     "70": 29,
   });
 
-  const wa_sig = await webauthn_signature(
+  const wa_sig = await createAntelopeSignature(
     {
       authenticatorData,
       clientDataJSON,
