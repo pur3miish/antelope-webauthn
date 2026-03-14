@@ -1,0 +1,140 @@
+export type CredentialKind =
+  | "hardware-security-key"
+  | "device-bound"
+  | "synced-passkey"
+  | "unknown";
+
+export type CredentialClassification = {
+  kind: CredentialKind;
+  confidence: "high" | "medium" | "low";
+  reason: string;
+  flags: {
+    userPresent: boolean;
+    userVerified: boolean;
+    backupEligible: boolean;
+    backupState: boolean;
+    attestedCredentialData: boolean;
+    extensionsIncluded: boolean;
+    signCount: number;
+  };
+};
+
+export type ClassifyWebAuthnCredentialInput = {
+  response: Pick<AuthenticatorAssertionResponse, "authenticatorData">;
+  /**
+   * Usually taken from PublicKeyCredential.authenticatorAttachment
+   */
+  authenticatorAttachment?: "platform" | "cross-platform" | null;
+  /**
+   * Optional registration-time hint if you stored transports.
+   */
+  transports?: string[] | null;
+};
+
+function parseAuthenticatorData(authData: Uint8Array) {
+  if (authData.length < 37) throw new Error("Invalid authenticatorData length");
+
+  const flags = authData[32];
+  const signCount = new DataView(
+    authData.buffer,
+    authData.byteOffset + 33,
+    4
+  ).getUint32(0, false);
+
+  return {
+    userPresent: !!(flags & 0x01),
+    userVerified: !!(flags & 0x04),
+    backupEligible: !!(flags & 0x08),
+    backupState: !!(flags & 0x10),
+    attestedCredentialData: !!(flags & 0x40),
+    extensionsIncluded: !!(flags & 0x80),
+    signCount,
+  };
+}
+
+export default function classifyWebAuthnCredential(
+  input: ClassifyWebAuthnCredentialInput
+): CredentialClassification {
+  const authData = new Uint8Array(input.response.authenticatorData);
+  const parsed = parseAuthenticatorData(authData);
+
+  const { backupEligible, backupState } = parsed;
+  const { authenticatorAttachment, transports } = input;
+
+  if (backupEligible && backupState) {
+    return {
+      kind: "synced-passkey",
+      confidence: "high",
+      reason:
+        "Credential is backup-eligible and currently backed up, which indicates a synced multi-device passkey.",
+      flags: parsed,
+    };
+  }
+
+  if (backupEligible && !backupState) {
+    return {
+      kind: "device-bound",
+      confidence: "medium",
+      reason:
+        "Credential is backup-eligible but not currently reported as backed up. This is often treated as device-bound for UX purposes, though technically it is still a multi-device credential class.",
+      flags: parsed,
+    };
+  }
+
+  if (!backupEligible) {
+    if (authenticatorAttachment === "cross-platform") {
+      return {
+        kind: "hardware-security-key",
+        confidence: "high",
+        reason:
+          "Credential is not backup-eligible and authenticatorAttachment is cross-platform, which strongly suggests a roaming hardware security key.",
+        flags: parsed,
+      };
+    }
+
+    if (authenticatorAttachment === "platform") {
+      return {
+        kind: "device-bound",
+        confidence: "high",
+        reason:
+          "Credential is not backup-eligible and authenticatorAttachment is platform, which indicates a device-bound platform authenticator.",
+        flags: parsed,
+      };
+    }
+
+    if (transports?.some((t) => ["usb", "nfc", "ble", "hybrid"].includes(t))) {
+      return {
+        kind: "hardware-security-key",
+        confidence: "medium",
+        reason:
+          "Credential is not backup-eligible and transports suggest a roaming authenticator, but authenticatorAttachment was not provided.",
+        flags: parsed,
+      };
+    }
+
+    if (transports?.includes("internal")) {
+      return {
+        kind: "device-bound",
+        confidence: "medium",
+        reason:
+          "Credential is not backup-eligible and transports suggest an internal platform authenticator, but authenticatorAttachment was not provided.",
+        flags: parsed,
+      };
+    }
+
+    return {
+      kind: "unknown",
+      confidence: "low",
+      reason:
+        "Credential is not backup-eligible, so it is single-device, but there is not enough metadata to determine whether it is a hardware security key or a built-in device-bound credential.",
+      flags: parsed,
+    };
+  }
+
+  return {
+    kind: "unknown",
+    confidence: "low",
+    reason: "Insufficient data to classify credential.",
+    flags: parsed,
+  };
+}
