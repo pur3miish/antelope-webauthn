@@ -5,11 +5,8 @@ export type CreateWebAuthnKeyResult = {
     response: AuthenticatorAttestationResponse;
     authenticatorAttachment: PublicKeyCredential["authenticatorAttachment"];
     clientExtensionResults: AuthenticationExtensionsClientOutputs;
-    antelope_public_key: string;
 };
 /**
- * creates a new webauthn credential and returns an Antelope compatible public key along with the attestation response and other relevant information.
- * @param options
- * @returns
+ * Creates a new webauthn credential, its attestation response, and related metadata by calling `navigator.credentials.create` with the provided options.
  */
 export default function authenticatorAttestation(options: CredentialCreationOptions): Promise<CreateWebAuthnKeyResult>;

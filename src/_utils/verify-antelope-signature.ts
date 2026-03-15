@@ -1,8 +1,8 @@
 import base58_to_binary from "base58-js/base58_to_binary.js";
 
-import assertBrowserCompatibility from "./_utils/browser-compatability.js";
-import decodeLEB128 from "./_utils/decodeLEB128.js";
-import sha256 from "./_utils/sha256.js";
+import assertBrowserCompatibility from "./browser-compatability.js";
+import decodeLEB128 from "./decodeLEB128.js";
+import sha256 from "./sha256.js";
 
 function calculateY(x: bigint, prefix: number) {
   const b = 0x5ac635d8aa3a93e7b3ebbd55769886bc651d06b0cc53b0f63bce3c3e27d2604bn;
@@ -113,7 +113,13 @@ function bigintToUint8Array(bigint: bigint): Uint8Array {
   return new Uint8Array(buffer);
 }
 
-export default async function verifyWebAuthnSignature(
+/**
+ * verifies an antelope compatible signature produced by the `antelopeSign` function. This can be used to verify signatures on the client side, or in a server environment. It takes the signature and the public key associated with the credential that produced the signature and returns a boolean indicating whether the signature is valid or not.
+ * @param signature
+ * @param public_key
+ * @returns
+ */
+export default async function verifyAntelopeSignature(
   signature: string,
   public_key: string
 ): Promise<boolean> {

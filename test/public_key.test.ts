@@ -1,7 +1,7 @@
 import { deepStrictEqual } from "assert";
 import { webcrypto } from "crypto";
 
-import createAntelopePublicKey from "../src/create-antelope-publickey";
+import createAntelopePublicKey from "../src/_utils/create-antelope-publickey";
 
 it("authenticatorAttestation", async () => {
   const clientDataJSON = Uint8Array.from([

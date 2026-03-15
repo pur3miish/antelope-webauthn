@@ -1,6 +1,6 @@
 {
   "name": "antelope-webauthn",
-  "version": "3.1.0-rc.4",
+  "version": "4.0.0-rc.5",
   "description": "A WebAuthn.io crypto utility for generating signatures, creating public keys, and verifying them, designed for Antelope-based blockchains such as Vaulta, WAX, and other related platforms. This package provides convenient tools to handle key pair generation, signing operations, and signature verification, supporting the WebAuthn standard for secure, decentralized authentication.",
   "engines": {
     "node": ">=18.0.0"
@@ -30,20 +30,8 @@
   ],
   "files": [
     "_utils/",
-    "antelope-webauthn.d.ts",
-    "antelope-webauthn.js",
-    "authenticator-assertion.d.ts",
-    "authenticator-assertion.js",
-    "authenticator-attestation.d.ts",
-    "authenticator-attestation.js",
-    "create-antelope-publickey.d.ts",
-    "create-antelope-publickey.js",
-    "create-antelope-signature.d.ts",
-    "create-antelope-signature.js",
-    "index.js",
     "index.d.ts",
-    "verify-antelope-signature.d.ts",
-    "verify-antelope-signature.js",
+    "index.js",
     "package.json"
   ],
   "exports": {

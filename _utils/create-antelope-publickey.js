@@ -1,8 +1,8 @@
 import binary_to_base58 from "base58-js/binary_to_base58.js";
 import ripemd160 from "ripemd160-js/ripemd160.js";
-import decodeCBOR from "./_utils/cbor-decode.js";
+import decodeCBOR from "./cbor-decode.js";
 /**
- * Creates an Antelope compatible public key from a webauthn attestation response.
+ * Creates an Antelope compatible public key from a webauthn attestation response (`authenticator attestation`).
  * The public key can then be used to verify signatures on chain.
  * @param attestationResponse - The response from the authenticator after creating a new credential.
  * @returns An Antelope compatible public key string.

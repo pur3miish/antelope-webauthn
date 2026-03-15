@@ -3,7 +3,7 @@ export type device_key = {
     credential_id: string;
 };
 /**
- * Function takes a device key and a hash of a challenge and initates a request to sign from a credential.
+ * Function takes a `device_key` type and a hash(challenge) and initates a request to sign from a credential.
  * This enables users to generate an antelope compatible signature using their webauthn credentials.
  * The signature can then be verified on chain using the public key associated with the credential.
  */

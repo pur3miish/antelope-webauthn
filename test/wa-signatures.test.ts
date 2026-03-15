@@ -1,8 +1,8 @@
 import { deepStrictEqual } from "assert";
 import { webcrypto } from "crypto";
 
-import webauthn_signature_build from "../create-antelope-signature.js";
-import createAntelopeSignature from "../src/create-antelope-signature.js";
+import webauthn_signature_build from "../src/_utils/create-antelope-signature.js";
+import createAntelopeSignature from "../src/_utils/create-antelope-signature.js";
 
 const public_key =
   "PUB_WA_6eRs44BYTJKPrGTCqR5TuMSQbCrZsNdNSXTHNuNitSdTfVQe8JSf89qy7JwxEnFW7";

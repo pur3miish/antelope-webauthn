@@ -1,7 +1,7 @@
 import { ok } from "assert";
 import { webcrypto } from "crypto";
 
-import verifySignature from "../src/verify-antelope-signature.js";
+import verifySignature from "../src/_utils/verify-antelope-signature.js";
 
 it("Verify WA signatures", async () => {
   global.window = { crypto: { subtle: webcrypto.subtle } };
