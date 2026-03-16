@@ -14,12 +14,38 @@ function parseAuthenticatorData(authData) {
     };
 }
 /**
- * Classifies a WebAuthn credential based on its authenticator data and metadata.
+ * Classifies a WebAuthn credential as a synced passkey, device-bound credential,
+ * or hardware security key by inspecting the authenticator data flags and any
+ * available attachment / transport metadata.
  *
- * The classification is based on the backup eligibility and state flags in the authenticator data, as well as any available metadata about the authenticator attachment and transports. The function returns a classification of the credential along with a confidence level and reasoning for the classification.
+ * The classification logic follows the WebAuthn Level 3 backup eligibility (BE)
+ * and backup state (BS) flag definitions:
+ * - `BE=1, BS=1` → synced passkey (high confidence)
+ * - `BE=1, BS=0` → device-bound for UX purposes, but technically multi-device class (medium)
+ * - `BE=0` → single-device; further refined by `authenticatorAttachment` / `transports`
  *
- * @param input - An object containing the authenticator response and optional metadata about the authenticator.
- * @returns A classification of the credential, including its kind, confidence level, reasoning, and relevant flags from the authenticator data.
+ * This function is synchronous and has no browser-environment requirement — it
+ * can be called in Node.js server environments as well.
+ *
+ * @param input - The authenticator response and optional metadata.
+ *   See {@link ClassifyWebAuthnCredentialInput}.
+ * @returns A {@link CredentialClassification} with `kind`, `confidence`,
+ *   `reason`, and the raw parsed `flags`.
+ * @throws {Error} If `authenticatorData` is shorter than 37 bytes (invalid).
+ *
+ * @example
+ * ```ts
+ * import { classifyWebAuthnCredential } from "antelope-webauthn";
+ *
+ * const classification = classifyWebAuthnCredential({
+ *   response: assertionResponse,
+ *   authenticatorAttachment: credential.authenticatorAttachment,
+ * });
+ *
+ * if (classification.kind === "synced-passkey") {
+ *   console.warn("This key is synced — consider requiring a hardware key for high-value actions.");
+ * }
+ * ```
  */
 export default function classifyWebAuthnCredential(input) {
     const authData = new Uint8Array(input.response.authenticatorData);
