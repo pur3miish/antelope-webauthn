@@ -1,13 +1,13 @@
 {
   "name": "antelope-webauthn",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "A WebAuthn.io crypto utility for generating signatures, creating public keys, and verifying them, designed for Antelope-based blockchains such as Vaulta, WAX, and other related platforms. This package provides convenient tools to handle key pair generation, signing operations, and signature verification, supporting the WebAuthn standard for secure, decentralized authentication.",
   "engines": {
     "node": ">=18.0.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/pur3miish/antelope-webauthn"
+    "url": "git+https://github.com/pur3miish/antelope-webauthn.git"
   },
   "sideEffects": false,
   "main": "index.js",
@@ -18,6 +18,7 @@
     "EOS",
     "TELOS",
     "WAX",
+    "FIO",
     "JUNGLE",
     "XRP",
     "signature",
@@ -29,32 +30,14 @@
   ],
   "files": [
     "_utils/",
-    "verify_wa_signature.js",
-    "verify_wa_signature.d.ts",
-    "create_wa_public_key.js",
-    "create_wa_public_key.d.ts",
-    "create_wa_signature.js",
-    "create_wa_signature.d.ts",
-    "index.js",
     "index.d.ts",
+    "index.js",
     "package.json"
   ],
   "exports": {
     ".": {
       "import": "./index.js",
       "types": "./index.d.ts"
-    },
-    "./create_wa_public_key": {
-      "import": "./create_wa_public_key.js",
-      "types": "./create_wa_public_key.d.ts"
-    },
-    "./create_wa_signature": {
-      "import": "./create_wa_signature.js",
-      "types": "./create_wa_signature.d.ts"
-    },
-    "./verify_wa_signature": {
-      "import": "./verify_wa_signature.js",
-      "types": "./verify_wa_signature.d.ts"
     }
   },
   "license": "MIT",

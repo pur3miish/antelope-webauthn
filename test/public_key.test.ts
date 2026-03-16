@@ -1,9 +1,9 @@
 import { deepStrictEqual } from "assert";
 import { webcrypto } from "crypto";
 
-import webauthPublicKey from "../src/_utils/webauthn-public-key.js";
+import createAntelopePublicKey from "../src/_utils/create-antelope-publickey";
 
-it("webauth public_keys", async () => {
+it("authenticatorAttestation", async () => {
   const clientDataJSON = Uint8Array.from([
     123, 34, 116, 121, 112, 101, 34, 58, 34, 119, 101, 98, 97, 117, 116, 104,
     110, 46, 99, 114, 101, 97, 116, 101, 34, 44, 34, 99, 104, 97, 108, 108, 101,
@@ -39,7 +39,7 @@ it("webauth public_keys", async () => {
   };
 
   deepStrictEqual(
-    await webauthPublicKey({ attestationObject, clientDataJSON }),
+    await createAntelopePublicKey({ attestationObject, clientDataJSON }),
     "PUB_WA_2ZTU7dUiALKzd4CXXRzAqtmzvP9N9873VEgUhwFajs2BFZXSSL6Eu3Y3mUrm59Mf9MC9"
   );
   delete global.window;
