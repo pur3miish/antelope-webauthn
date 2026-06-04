@@ -1,5 +1,11 @@
 # Antelope webauthn changelog
 
+## v4.0.1
+
+### Patch
+
+- Added a new icon for the project.
+
 ## v4.0.0
 
 ### Major
