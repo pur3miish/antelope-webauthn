@@ -1,3 +1,5 @@
+![relockeql logo](/src/relocke-webauthn.svg)
+
 # antelope-webauthn
 
 [![npm version](https://img.shields.io/npm/v/antelope-webauthn.svg)](https://www.npmjs.com/package/antelope-webauthn) [![npm downloads](https://img.shields.io/npm/dm/antelope-webauthn.svg)](https://www.npmjs.com/package/antelope-webauthn) [![license](https://img.shields.io/npm/l/antelope-webauthn.svg)](https://github.com/your-repo/antelope-webauthn/blob/main/LICENSE)
@@ -131,9 +133,11 @@ console.log("Signature verified:", verified);
 Registers a new WebAuthn credential by calling `navigator.credentials.create`. Use this during account setup to generate a hardware-backed key pair.
 
 **Parameters**
+
 - `options: CredentialCreationOptions` — Standard WebAuthn credential creation options (rp, user, challenge, pubKeyCredParams, etc.)
 
 **Returns** `Promise<CreateWebAuthnKeyResult>` — An object containing:
+
 - `id: string` — Base64url-encoded credential ID
 - `rawId: ArrayBuffer`
 - `type: string`
@@ -148,6 +152,7 @@ Registers a new WebAuthn credential by calling `navigator.credentials.create`. U
 Derives an Antelope-compatible `PUB_WA_*` public key from a WebAuthn attestation response. Store this key on-chain to authorize future signatures from this credential.
 
 **Parameters**
+
 - `response: AuthenticatorAttestationResponse` — The `response` field from `authenticatorAttestation`
 
 **Returns** `Promise<string>` — An Antelope public key string in `PUB_WA_` format.
@@ -159,6 +164,7 @@ Derives an Antelope-compatible `PUB_WA_*` public key from a WebAuthn attestation
 Signs a 32-byte hash (e.g. an Antelope transaction digest) using a previously registered WebAuthn credential. Triggers a biometric/PIN prompt on the user's device.
 
 **Parameters**
+
 - `device_keys: { public_key: string, credential_id: string }[]` — One or more registered credentials to offer the authenticator. The first one the device accepts will be used.
 - `hash: Uint8Array | string` — The 32-byte message hash to sign. Accepts a `Uint8Array` or a hex string.
 
@@ -171,6 +177,7 @@ Signs a 32-byte hash (e.g. an Antelope transaction digest) using a previously re
 Verifies a `SIG_WA_*` signature against a `PUB_WA_*` public key on the client or server side using the Web Crypto API.
 
 **Parameters**
+
 - `signature: string` — An Antelope signature in `SIG_WA_` format, as returned by `antelopeSign`
 - `public_key: string` — The `PUB_WA_` public key associated with the signing credential
 
@@ -183,6 +190,7 @@ Verifies a `SIG_WA_*` signature against a `PUB_WA_*` public key on the client or
 Low-level wrapper around `navigator.credentials.get`. Used internally by `antelopeSign`. Exposed for advanced use cases where you need direct access to the raw `PublicKeyCredential` assertion response before Antelope serialization.
 
 **Parameters**
+
 - `options: CredentialRequestOptions` — Standard WebAuthn credential request options
 
 **Returns** `Promise<PublicKeyCredential>`
@@ -194,6 +202,7 @@ Low-level wrapper around `navigator.credentials.get`. Used internally by `antelo
 Low-level function that converts a raw WebAuthn assertion response into a `SIG_WA_*` signature string. Used internally by `antelopeSign`. Exposed for advanced use cases where you already have an `AuthenticatorAssertionResponse`.
 
 **Parameters**
+
 - `response: AuthenticatorAssertionResponse` — The assertion response from `authenticatorAssertion`
 - `public_key: string` — The `PUB_WA_` public key for the signing credential
 
@@ -206,11 +215,13 @@ Low-level function that converts a raw WebAuthn assertion response into a `SIG_W
 Inspects a WebAuthn authenticator data response and classifies the credential type. Useful for UX decisions (e.g. warning users that a synced passkey is less secure than a hardware key for on-chain authorization).
 
 **Parameters**
+
 - `input.response` — An object with `authenticatorData: ArrayBuffer` (from an assertion or attestation response)
 - `input.authenticatorAttachment?: "platform" | "cross-platform" | null` — Usually `PublicKeyCredential.authenticatorAttachment`
 - `input.transports?: string[] | null` — Optional transport hints stored at registration time
 
 **Returns** `CredentialClassification`:
+
 - `kind: "hardware-security-key" | "device-bound" | "synced-passkey" | "unknown"`
 - `confidence: "high" | "medium" | "low"`
 - `reason: string` — Human-readable explanation of the classification
