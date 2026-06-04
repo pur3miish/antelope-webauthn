@@ -1,3 +1,5 @@
+![relockeql logo](https://raw.githubusercontent.com/pur3miish/RelockeQL/main/static/relockeql.svg)
+
 # antelope-webauthn
 
 [![npm version](https://img.shields.io/npm/v/antelope-webauthn.svg)](https://www.npmjs.com/package/antelope-webauthn) [![npm downloads](https://img.shields.io/npm/dm/antelope-webauthn.svg)](https://www.npmjs.com/package/antelope-webauthn) [![license](https://img.shields.io/npm/l/antelope-webauthn.svg)](https://github.com/your-repo/antelope-webauthn/blob/main/LICENSE)
