@@ -1,4 +1,4 @@
-![relockeql logo](https://raw.githubusercontent.com/pur3miish/RelockeQL/main/static/relockeql.svg)
+![relockeql logo]([https://raw.githubusercontent.com/pur3miish/RelockeQL/main/static/relockeql.svg])
 
 # antelope-webauthn
 
